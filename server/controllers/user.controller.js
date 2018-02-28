@@ -1,0 +1,31 @@
+import User from '../models/user';
+
+export const validateNewUser = (req, res, next) => {
+  req.sanitizeBody('displayName');
+  req.checkBody('displayName', 'You must supply a name!').notEmpty();
+  req.checkBody('email', 'Invalid email address.').isEmail();
+  req.sanitizeBody('email').normalizeEmail();
+  req.checkBody('password', 'Password can\'t be blank.').notEmpty();
+  req.checkBody('confirmPassword', 'Confirm password can\'t be blank.').notEmpty();
+  req.checkBody('confirmPassword', 'Passwords do not match!').equals(req.body.password);
+
+  const errors = req.validationErrors();
+  if (errors) {
+    // req.flash('error', errors.map(err => err.msg));
+    // res.render('register', { title: 'Register', body: req.body, flashes: req.flash() });
+    // return;
+    return res.json({ body: req.body, errors });
+  }
+
+  next();
+};
+
+export const signup = async (req, res, next) => {
+  const newUser = new User({
+    email: req.body.email,
+    displayName: req.body.displayName
+  });
+
+  await User.registerAsync(newUser, req.body.password);
+  next();
+};
