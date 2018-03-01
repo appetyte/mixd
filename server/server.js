@@ -41,6 +41,9 @@ import routes from '../client/routes';
 import { fetchComponentData } from './util/fetchData';
 import posts from './routes/post.routes';
 import users from './routes/user.routes';
+//tk
+import mixables from './routes/mixable.routes';
+//end tk
 import dummyData from './dummyData';
 import serverConfig from './config';
 
@@ -71,6 +74,10 @@ app.use(expressValidator());
 // app.use(flash());
 app.use('/api', posts);
 app.use('/api', users);
+//tk
+// app.get('/api/mixables/from_shelf', )
+app.use('/api', mixables);
+//tk end
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
