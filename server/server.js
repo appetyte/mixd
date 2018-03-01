@@ -4,14 +4,14 @@ import compression from 'compression';
 import mongoose from 'mongoose';
 import path from 'path';
 
-import React from 'react'
-import ReactDOMServer from 'react-dom/server'
-import { StaticRouter } from 'react-router'
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import { StaticRouter } from 'react-router';
 import App from '../client/App';
 
 import serverConfig from './config';
 
-// import userRoutes from './routes/user.routes';
+import userRoutes from './routes/user.routes';
 
 const isDevMode = Boolean(process.env.NODE_ENV === 'development');
 const isProdMode = Boolean(process.env.NODE_ENV === 'production');
@@ -30,8 +30,8 @@ const app = new Express();
 app.use(compression());
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
-app.use(Express.static(path.resolve(__dirname, '../dist/client')));
-// app.use('/api', userRoutes);
+app.use(Express.static(path.resolve(__dirname, '../dist')));
+app.use('/api', userRoutes);
 
 const renderFullPage = (html, initialState) => {
   return `
@@ -40,13 +40,14 @@ const renderFullPage = (html, initialState) => {
       <head>
         <title>mixd</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="style.css">
       </head>
       <body>
         <div id="root">${html}</div>
         <script>
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="/bundle.js"></script>
+        <script src="bundle.js"></script>
       </body>
     </html>
   `;
@@ -63,7 +64,7 @@ const renderError = (err) => {
 };
 
 app.use((req, res) => {
-  const context = {}
+  const context = {};
 
   const html = ReactDOMServer.renderToString(
     <StaticRouter
@@ -72,16 +73,16 @@ app.use((req, res) => {
     >
       <App />
     </StaticRouter>
-  )
+  );
 
   if (context.url) {
     res.writeHead(301, {
       Location: context.url
-    })
-    res.end()
+    });
+    res.end();
   } else {
-    res.write(renderFullPage(html))
-    res.end()
+    res.write(renderFullPage(html));
+    res.end();
   }
 });
 
