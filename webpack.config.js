@@ -2,6 +2,17 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+// https://github.com/webpack/webpack/issues/1754
+require('babel-core/register')({
+  presets: ['env', 'react']
+});
+require.extensions['.scss'] = () => {
+  return;
+};
+require.extensions['.css'] = () => {
+  return;
+};
+
 const prodPlugins = [
   new webpack.DefinePlugin({
     'process.env': {
@@ -15,14 +26,20 @@ const prodPlugins = [
   }),
 ];
 
-const plugins = process.env.NODE_ENV === 'production' ? prodPlugins : [];
+const defaultPlugins = [
+  new ExtractTextPlugin('dist/style.css')
+];
+
+const plugins = process.env.NODE_ENV === 'production'
+  ? defaultPlugins.concat(prodPlugins)
+  : defaultPlugins;
 
 module.exports = {
   context: __dirname,
   entry: './client/index.js',
   output: {
     path: __dirname,
-    filename: 'bundle.js',
+    filename: 'dist/bundle.js',
   },
   plugins,
   resolve: {
