@@ -73,14 +73,7 @@ mixableSchema.statics.fromShelf = function(shelf, cb) {
           }
         }
       ];
-
-      this.aggregate(query, (err2, cursor2) => {
-        if (err2) {
-          // TODO: Handle Error
-        } else {
-          cb(cursor2);
-        }
-      });
+      this.aggregate(query, cb);
     }
   });
 };
