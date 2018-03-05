@@ -8,7 +8,11 @@ export const fromShelf = (req, res) => {
 };
 
 export const show = (req, res) => {
-  Mixable.find({_id: req.params.id}, (err, out) => {
-    res.json(out);
-  });
+  Mixable.find(
+    {_id: req.params.id},
+    {recipes: 0},
+    (err, out) => {
+      res.json(out);
+    }
+  );
 };
