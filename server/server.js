@@ -12,6 +12,8 @@ import App from '../client/App';
 import serverConfig from './config';
 
 import userRoutes from './routes/user.routes';
+import mixableRoutes from './routes/mixable.routes';
+
 
 const isDevMode = Boolean(process.env.NODE_ENV === 'development');
 const isProdMode = Boolean(process.env.NODE_ENV === 'production');
@@ -32,6 +34,8 @@ app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../dist')));
 app.use('/api', userRoutes);
+app.use('/api', mixableRoutes);
+
 
 const renderFullPage = (html, initialState) => {
   return `
