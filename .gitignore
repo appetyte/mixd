@@ -11,5 +11,6 @@ coverage/
 bundle.js
 bundle.js.map
 bundle.min.js
+.eslintrc.json
 style.css
 style.css.map
