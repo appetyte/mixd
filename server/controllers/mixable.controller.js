@@ -6,3 +6,9 @@ export const fromShelf = (req, res) => {
     res.json(cursor);
   });
 };
+
+export const show = (req, res) => {
+  Mixable.find({_id: req.params.id}, (err, out) => {
+    res.json(out);
+  });
+};
