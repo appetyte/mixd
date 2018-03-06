@@ -10,6 +10,19 @@
     stroke: #fff;
     stroke-width: 1.5px;
   }
+
+  div.tooltip {
+      position: absolute;
+      text-align: center;
+      width: 60px;
+      /* height: 28px; */
+      padding: 2px;
+      font: 12px sans-serif;
+      background: lightsteelblue;
+      border: 0px;
+      border-radius: 8px;
+      pointer-events: none;
+  }
 </style>
 <svg width="960" height="800"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -19,12 +32,16 @@
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
+  const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
   //nodes
   const nodes_data = [
         {
             "name": "Vodka",
             "type": "I",
-            "recipeCount": 84,
+            "recipesCount": 84,
             "inShelf": true
         },
         {
@@ -534,847 +551,847 @@
         {
             "name": "151 proof rum",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "7-Up",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Allspice",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Almond",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Amaretto",
             "type": "I",
-            "recipeCount": 5,
+            "recipesCount": 5,
             "inShelf": false
         },
         {
             "name": "Angelica root",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Angostura bitters",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Anise",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Apple juice",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Apricot brandy",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Añejo rum",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Bailey's irish cream",
             "type": "I",
-            "recipeCount": 3,
+            "recipesCount": 3,
             "inShelf": false
         },
         {
             "name": "Banana liqueur",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Beer",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Bitters",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Blue Curacao",
             "type": "I",
-            "recipeCount": 5,
+            "recipesCount": 5,
             "inShelf": false
         },
         {
             "name": "Blueberry schnapps",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Bourbon",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Butterscotch schnapps",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Candy",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Caramel coloring",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Chambord raspberry liqueur",
             "type": "I",
-            "recipeCount": 3,
+            "recipesCount": 3,
             "inShelf": false
         },
         {
             "name": "Champagne",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Cherry",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Cherry Grenadine",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Cherry brandy",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Cherry liqueur",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Chocolate ice-cream",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Chocolate syrup",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Cinnamon",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Club soda",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Coca-Cola",
             "type": "I",
-            "recipeCount": 4,
+            "recipesCount": 4,
             "inShelf": false
         },
         {
             "name": "Coconut liqueur",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Coffee",
             "type": "I",
-            "recipeCount": 3,
+            "recipesCount": 3,
             "inShelf": false
         },
         {
             "name": "Coffee liqueur",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Cointreau",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Coriander",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Corn syrup",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Cranberry Juice",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Cranberry juice",
             "type": "I",
-            "recipeCount": 8,
+            "recipesCount": 8,
             "inShelf": false
         },
         {
             "name": "Cream",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Cream of coconut",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Creme de Banane",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Creme de Cacao",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Creme de Cassis",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Dark rum",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Dr. Pepper",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Dry Vermouth",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Everclear",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Food coloring",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Fruit",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Fruit juice",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Galliano",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Gin",
             "type": "I",
-            "recipeCount": 9,
+            "recipesCount": 9,
             "inShelf": false
         },
         {
             "name": "Ginger ale",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Gold tequila",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Grape soda",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Grapefruit Juice",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Grapefruit juice",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Grenadine",
             "type": "I",
-            "recipeCount": 4,
+            "recipesCount": 4,
             "inShelf": false
         },
         {
             "name": "Guinness stout",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Half-and-half",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Heavy cream",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Hot chocolate",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Ice",
             "type": "I",
-            "recipeCount": 10,
+            "recipesCount": 10,
             "inShelf": false
         },
         {
             "name": "Iced tea",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Jello",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Jägermeister",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Kahlua",
             "type": "I",
-            "recipeCount": 5,
+            "recipesCount": 5,
             "inShelf": false
         },
         {
             "name": "Kirschwasser",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Kool-Aid",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Lemon",
             "type": "I",
-            "recipeCount": 3,
+            "recipesCount": 3,
             "inShelf": false
         },
         {
             "name": "Lemon Juice",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Lemon juice",
             "type": "I",
-            "recipeCount": 5,
+            "recipesCount": 5,
             "inShelf": false
         },
         {
             "name": "Lemon peel",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Lemon-lime soda",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Lemonade",
             "type": "I",
-            "recipeCount": 6,
+            "recipesCount": 6,
             "inShelf": false
         },
         {
             "name": "Licorice root",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Light cream",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Light rum",
             "type": "I",
-            "recipeCount": 4,
+            "recipesCount": 4,
             "inShelf": false
         },
         {
             "name": "Lillet Blanc",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Lime",
             "type": "I",
-            "recipeCount": 3,
+            "recipesCount": 3,
             "inShelf": false
         },
         {
             "name": "Lime juice",
             "type": "I",
-            "recipeCount": 4,
+            "recipesCount": 4,
             "inShelf": false
         },
         {
             "name": "Lime juice cordial",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Limeade",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Malibu rum",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Marjoram leaves",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Melon liqueur",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Midori melon liqueur",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Milk",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Mountain Dew",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Nutmeg",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Olive",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Olive Brine",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Orange",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Orange juice",
             "type": "I",
-            "recipeCount": 17,
+            "recipesCount": 17,
             "inShelf": false
         },
         {
             "name": "Oreo cookie",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Ouzo",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Passion fruit syrup",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Peach nectar",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Peach schnapps",
             "type": "I",
-            "recipeCount": 5,
+            "recipesCount": 5,
             "inShelf": false
         },
         {
             "name": "Peachtree schnapps",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Pineapple",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Pineapple juice",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Pink lemonade",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Pisang Ambon",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Raspberry Liqueur",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Rum",
             "type": "I",
-            "recipeCount": 6,
+            "recipesCount": 6,
             "inShelf": false
         },
         {
             "name": "Salt",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Sambuca",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Schweppes Russchian",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Sloe gin",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Soda water",
             "type": "I",
-            "recipeCount": 3,
+            "recipesCount": 3,
             "inShelf": false
         },
         {
             "name": "Sour mix",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Southern Comfort",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Sprite",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Strawberries",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Strawberry liqueur",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Sugar",
             "type": "I",
-            "recipeCount": 9,
+            "recipesCount": 9,
             "inShelf": false
         },
         {
             "name": "Sugar Syrup",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Sugar syrup",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Surge",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Sweet and sour",
             "type": "I",
-            "recipeCount": 4,
+            "recipesCount": 4,
             "inShelf": false
         },
         {
             "name": "Tabasco sauce",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Tequila",
             "type": "I",
-            "recipeCount": 7,
+            "recipesCount": 7,
             "inShelf": false
         },
         {
             "name": "Tia maria",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Tomato juice",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Tonic water",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Triple Sec",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Triple sec",
             "type": "I",
-            "recipeCount": 9,
+            "recipesCount": 9,
             "inShelf": false
         },
         {
             "name": "Vanilla",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Vanilla Ice-Cream",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Vanilla extract",
             "type": "I",
-            "recipeCount": 2,
+            "recipesCount": 2,
             "inShelf": false
         },
         {
             "name": "Vanilla ice-cream",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Water",
             "type": "I",
-            "recipeCount": 7,
+            "recipesCount": 7,
             "inShelf": false
         },
         {
             "name": "White Creme de Menthe",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "White rum",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Worcestershire sauce",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "Wormwood",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         },
         {
             "name": "pineapple juice",
             "type": "I",
-            "recipeCount": 1,
+            "recipesCount": 1,
             "inShelf": false
         }
     ]
 
   //links
-  var links_data = [
+  const links_data = [
         {
             "source": "Vodka",
             "target": "Black Russian"
@@ -2868,7 +2885,7 @@
   simulation
     .force('links', d3.forceLink(links_data).id(d => d.name));
 
-  let link = svg.append('g')
+  const link = svg.append('g')
     .attr('class', 'links')
     .selectAll('line')
     .data(links_data)
@@ -2876,22 +2893,62 @@
     .append('line')
     .attr('stroke-width', 2)
 
-  let node = svg.append('g')
+  const node = svg.append('g')
     .attr('class', 'nodes')
     .selectAll('circle')
     .data(nodes_data)
     .enter()
     .append('circle')
-    .attr('r', 5)
+    .attr('r', d => 5 + d.recipesCount * 0.25)
     .attr('fill', d => {
       if (d.type === 'I') {
-        return 'blue'
+        if (d.inShelf) {
+          return 'blue'
+        } else {
+          return 'green'
+        }
       } else {
         return "red"
       }
     })
+    .on("mouseover", function(d) {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltip	.html(d.name)
+            // tooltip	.html(formatTime(d.date) + "<br/>"  + d.close)
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+            })
+    .on("mouseout", function(d) {
+        tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+    })
 
+  const drag_handler = d3.drag()
+      .on("start", drag_start)
+      .on("drag", drag_drag)
+      .on("end", drag_end);
 
+  function drag_start(d) {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+
+  function drag_drag(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
+
+  function drag_end(d) {
+    if (!d3.event.active) simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+  }
+
+  drag_handler(node)
 
   // ticks
   const tickActions = () => {
