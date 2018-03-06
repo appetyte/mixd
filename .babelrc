@@ -2,7 +2,11 @@
   "presets": ["react", "env"],
   "env": {
     "production": {
+      "plugins": [["babel-plugin-webpack-alias"]],
       "presets": ["react", "env"]
+    },
+    "development": {
+      "plugins": [["babel-plugin-webpack-alias"]]
     }
   }
 }
