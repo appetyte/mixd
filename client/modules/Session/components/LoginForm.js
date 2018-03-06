@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import './login.scss';
 
-class SignupForm extends React.Component {
+class LoginForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -41,10 +41,12 @@ class SignupForm extends React.Component {
   }
 }
 
-const mapStateToProps = () => ({
+export default LoginForm;
 
-});
-
-export default connect(
-  mapStateToProps
-)(SignupForm);
+// const mapStateToProps = () => ({
+//
+// });
+//
+// export default connect(
+//   mapStateToProps
+// )(LoginForm);

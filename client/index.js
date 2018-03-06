@@ -8,6 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const RootWithStore = <Root store={store} />;
   const rootElement = document.getElementById('root');
 
-  hydrate(<Root store={store} />, rootElement);
+  hydrate(RootWithStore, rootElement);
   delete window.__PRELOADED_STATE__;
 });
