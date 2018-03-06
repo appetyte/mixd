@@ -7,15 +7,15 @@ export const receiveCurrentUser = currentUser => ({
   currentUser,
 });
 
-export const logIn = newUser => dispatch => (
-  callApi('login', 'post', { newUser })
+export const logIn = user => dispatch => (
+  callApi('login', 'post', user)
     .then(payloadWithUser => (
       dispatch(receiveCurrentUser(payloadWithUser))
     ))
 );
 
-export const signUp = user => dispatch => (
-  callApi('signup', 'post', { user })
+export const signUp = newUser => dispatch => (
+  callApi('signup', 'post', newUser)
     .then(payloadWithUser => (
       dispatch(receiveCurrentUser(payloadWithUser))
     ))
