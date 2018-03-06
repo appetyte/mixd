@@ -19,6 +19,7 @@
   "homepage": "https://github.com/appetyte/mixd#readme",
   "dependencies": {
     "babel-core": "^6.26.0",
+    "babel-plugin-webpack-alias": "^2.1.2",
     "body-parser": "^1.18.2",
     "compression": "^1.7.2",
     "cross-env": "^5.1.3",
