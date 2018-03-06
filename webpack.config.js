@@ -42,7 +42,6 @@ module.exports = {
   },
   plugins,
   resolve: {
-    root: path.resolve(__dirname),
     alias: {
       apiCaller: "client/util/apiCaller"
     },

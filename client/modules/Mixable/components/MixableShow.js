@@ -4,11 +4,27 @@ import { fetchMixable } from "../mixableActions";
 
 class MixableShow extends React.Component {
   componentDidMount() {
-    return fetchMixable(this.props.match.params.id);
+    return fetchMixable(this.props.match.params.id).then(
+      arg => console.log(arg),
+      error => console.log(error)
+    );
+  }
+
+  handleClick(e) {
+    e.preventDefault();
+    console.log("success!");
+    return fetchMixable(this.props.match.params.id).then(
+      arg => console.log(arg),
+      error => console.log(error)
+    );
   }
 
   render() {
-    return <div>Placeholder</div>;
+    return (
+      <div>
+        <button onClick={this.handleClick.bind(this)}>Press me!</button>
+      </div>
+    );
   }
 }
 
