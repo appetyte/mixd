@@ -1,8 +1,10 @@
 import Express from 'express';
+import ExpressValidator from 'express-validator';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import mongoose from 'mongoose';
 import path from 'path';
+import passport from 'passport';
 
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -30,10 +32,15 @@ mongoose.connect(serverConfig.mongoURL, (error) => {
 
 const app = new Express();
 
+app.use(ExpressValidator());
 app.use(compression());
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../dist')));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/api', userRoutes);
 app.use('/api', mixableRoutes);
 
@@ -44,14 +51,14 @@ const renderFullPage = (html, preloadedState) => {
       <head>
         <title>mixd</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" type="text/css" href="/style.css">
       </head>
       <body>
         <div id="root">${html}</div>
         <script>
           window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')};
         </script>
-        <script src="bundle.js"></script>
+        <script src="/bundle.js"></script>
       </body>
     </html>
   `;
