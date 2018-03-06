@@ -27,15 +27,47 @@ class LoginForm extends React.Component {
     e.preventDefault();
 
     const newUser = Object.assign({}, this.state);
+    // login a user, post.
   }
 
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <input type="email" onChange={this.handleChange('email')} />
-        <input type="text" onChange={this.handleChange('displayName')} />
-        <input type="password" onChange={this.handleChange('password')} />
-        <input type="password" onChange={this.handleChange('confirmPassword')} />
+        <label>
+          Email
+          <input
+            autoComplete="email"
+            type="email"
+            onChange={this.handleChange('email')}
+          />
+        </label>
+        <label>
+          Username
+          <input
+            autoComplete="username"
+            type="text"
+            onChange={this.handleChange('displayName')}
+          />
+        </label>
+        <label>
+          Password
+          <input
+            autoComplete="off"
+            type="password"
+            onChange={this.handleChange('password')}
+          />
+        </label>
+        <label>
+          Confirm password
+          <input
+            autoComplete="off"
+            type="password"
+            onChange={this.handleChange('confirmPassword')}
+          />
+        </label>
+        <button>
+          Create user
+        </button>
       </form>
     );
   }
