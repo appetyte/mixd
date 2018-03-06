@@ -41,10 +41,12 @@ class SignupForm extends React.Component {
   }
 }
 
-const mapStateToProps = () => ({
+export default SignupForm;
 
-});
-
-export default connect(
-  mapStateToProps
-)(SignupForm);
+// const mapStateToProps = () => ({
+//
+// });
+//
+// export default connect(
+//   mapStateToProps
+// )(SignupForm);
