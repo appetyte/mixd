@@ -1,11 +1,14 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
+import { fetchMixable } from "../mixableActions";
 
 class MixableShow extends React.Component {
-  componentDidMount() {}
+  componentDidMount() {
+    return fetchMixable(this.props.match.params.id);
+  }
 
   render() {
-    return <div />;
+    return <div>Placeholder</div>;
   }
 }
 

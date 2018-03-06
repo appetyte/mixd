@@ -1,4 +1,4 @@
-import apiCaller from "apiCaller";
+import apiCaller from "../../util/apiCaller";
 
 export const RECEIVE_MIXABLE = "RECEIVE_MIXABLE";
 
