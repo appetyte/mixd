@@ -11,7 +11,7 @@ export const validateNewUser = (req, res, next) => {
 
   const errors = req.validationErrors();
   if (errors) {
-    return res.json({ body: req.body, errors });
+    return res.json(errors);
   }
 
   next();
@@ -23,6 +23,10 @@ export const signup = async (req, res, next) => {
     displayName: req.body.displayName,
   });
 
-  await User.registerAsync(newUser, req.body.password);
+  await User.register(newUser, req.body.password)
+    .catch((errors) => {
+      res.json({ errors });
+    });
+
   next();
 };
