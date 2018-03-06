@@ -5,16 +5,16 @@ import mongoose from 'mongoose';
 import path from 'path';
 
 import React from 'react';
-import { Provider } from 'redux';
+import { Provider } from 'react-redux';
 import { renderToString } from 'react-dom/server';
-import { StaticRouter } from 'react-router';
+import { StaticRouter, matchPath } from 'react-router';
 
 import App from '../client/App';
 import configureStore from '../client/store';
 import serverConfig from './config';
+import routes from '../client/routes';
 import userRoutes from './routes/user.routes';
 import mixableRoutes from './routes/mixable.routes';
-
 
 const isDevMode = Boolean(process.env.NODE_ENV === 'development');
 const isProdMode = Boolean(process.env.NODE_ENV === 'production');
@@ -36,7 +36,6 @@ app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../dist')));
 app.use('/api', userRoutes);
 app.use('/api', mixableRoutes);
-
 
 const renderFullPage = (html, preloadedState) => {
   return `
