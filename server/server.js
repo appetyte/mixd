@@ -1,5 +1,7 @@
 import Express from 'express';
 import ExpressValidator from 'express-validator';
+import session from 'express-session';
+import connectMongo from 'connect-mongo';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import mongoose from 'mongoose';
@@ -32,11 +34,20 @@ mongoose.connect(serverConfig.mongoURL, (error) => {
 
 const app = new Express();
 
+// https://github.com/expressjs/session#compatible-session-stores
+const MongoStore = connectMongo(session);
+
 app.use(ExpressValidator());
 app.use(compression());
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../dist')));
+app.use(session({
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
