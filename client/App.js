@@ -1,8 +1,6 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import './app.scss';
-
 import LoginForm from './modules/Session/components/LoginForm';
 import SignupForm from './modules/Session/components/SignupForm';
 
