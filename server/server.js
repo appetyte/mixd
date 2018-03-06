@@ -5,12 +5,13 @@ import mongoose from 'mongoose';
 import path from 'path';
 
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import { Provider } from 'redux';
+import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
+
 import App from '../client/App';
-
+import configureStore from '../client/store';
 import serverConfig from './config';
-
 import userRoutes from './routes/user.routes';
 import mixableRoutes from './routes/mixable.routes';
 
@@ -37,7 +38,7 @@ app.use('/api', userRoutes);
 app.use('/api', mixableRoutes);
 
 
-const renderFullPage = (html, initialState) => {
+const renderFullPage = (html, preloadedState) => {
   return `
     <!doctype html>
     <html>
@@ -49,7 +50,7 @@ const renderFullPage = (html, initialState) => {
       <body>
         <div id="root">${html}</div>
         <script>
-          window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
+          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')};
         </script>
         <script src="bundle.js"></script>
       </body>
@@ -67,27 +68,38 @@ const renderError = (err) => {
   return renderFullPage(`Server Error ${errTrace}`, {});
 };
 
-app.use((req, res) => {
-  const context = {};
+app.get('*', (req, res, next) => {
+  const store = configureStore();
+  const promises = routes.reduce((accumulator, route) => {
+    if (
+      matchPath(req.url, route) &&
+      route.component &&
+      route.component.initialAction
+    ) {
+      accumulator.push(Promise.resolve(store.dispatch(route.component.initialAction())));
+    }
 
-  const html = ReactDOMServer.renderToString(
-    <StaticRouter
-      location={req.url}
-      context={context}
-    >
-      <App />
-    </StaticRouter>
-  );
+    return accumulator;
+  }, []);
 
-  if (context.url) {
-    res.writeHead(301, {
-      Location: context.url
-    });
-    res.end();
-  } else {
-    res.write(renderFullPage(html));
-    res.end();
-  }
+  Promise.all(promises)
+    .then(() => {
+      const context = {};
+      const content = renderToString(
+        <Provider store={store}>
+          <StaticRouter
+            location={req.url}
+            context={context}
+          >
+            <App />
+          </StaticRouter>
+        </Provider>
+      );
+
+      const initialState = store.getState();
+      res.send(renderFullPage(content, initialState));
+    })
+    .catch(next);
 });
 
 app.listen(serverConfig.port, (error) => {
