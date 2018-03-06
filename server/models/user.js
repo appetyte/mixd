@@ -19,6 +19,10 @@ const userSchema = new Schema({
     trim: true,
     required: 'Please supply a username!',
   },
+  googleId: {
+    type: String,
+    required: false,
+  },
 });
 
 userSchema.plugin(passportLocalMongoose, {
