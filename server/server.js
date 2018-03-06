@@ -114,7 +114,12 @@ app.get('*', (req, res, next) => {
       );
 
       const initialState = store.getState();
-      res.send(renderFullPage(content, initialState));
+      let preloadedUser = {};
+      if (req.user && req.user._doc) {
+        preloadedUser = { session: req.user._doc }
+      }
+      const preloadedState = Object.assign({}, initialState, preloadedUser);
+      res.send(renderFullPage(content, preloadedState));
     })
     .catch(next);
 });
