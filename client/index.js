@@ -1,10 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { hydrate } from 'react-dom';
 import Root from './Root';
-import store from './store';
+import configureStore from './store';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const RootWithStore = <Root store={store()} />;
+  const store = configureStore(window.__PRELOADED_STATE__);
+  const RootWithStore = <Root store={store} />;
   const rootElement = document.getElementById('root');
-  ReactDOM.render(RootWithStore, rootElement);
+
+  hydrate(<Root store={store} />, rootElement);
+  delete window.__PRELOADED_STATE__;
 });
