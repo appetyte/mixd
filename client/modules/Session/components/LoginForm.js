@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import './login.scss';
+
+import { logIn } from '../SessionActions';
+import './session.scss';
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -26,59 +28,48 @@ class LoginForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const newUser = Object.assign({}, this.state);
-    // login a user, post.
+    const user = Object.assign({}, this.state);
+    this.props.logIn(user);
   }
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
+      <form
+        className="session-form"
+        onSubmit={this.handleSubmit}
+      >
+        <label htmlFor="email">
           Email
           <input
+            id="email"
             autoComplete="email"
             type="email"
             onChange={this.handleChange('email')}
           />
         </label>
-        <label>
-          Username
-          <input
-            autoComplete="username"
-            type="text"
-            onChange={this.handleChange('displayName')}
-          />
-        </label>
-        <label>
+        <label htmlFor="password">
           Password
           <input
+            htmlFor="password"
             autoComplete="off"
             type="password"
             onChange={this.handleChange('password')}
           />
         </label>
-        <label>
-          Confirm password
-          <input
-            autoComplete="off"
-            type="password"
-            onChange={this.handleChange('confirmPassword')}
-          />
-        </label>
         <button>
-          Create user
+          Log in
         </button>
+        <a href="/api/auth/google">Log in with google</a>
       </form>
     );
   }
 }
 
-export default LoginForm;
+const mapDispatchToProps = dispatch => ({
+  logIn: newUser => dispatch(logIn(newUser)),
+});
 
-// const mapStateToProps = () => ({
-//
-// });
-//
-// export default connect(
-//   mapStateToProps
-// )(LoginForm);
+export default connect(
+  null,
+  mapDispatchToProps,
+)(LoginForm);
