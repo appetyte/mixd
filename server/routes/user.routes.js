@@ -11,6 +11,7 @@ router
     AuthController.login,
   );
 
+// FIXME: validate email on login
 router.route('/login').post(AuthController.login);
 
 router.route('/auth/google').get(AuthController.googleLogin);

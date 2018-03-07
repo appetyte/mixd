@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { logIn } from '../SessionActions';
+import { logIn } from '../sessionActions';
 import './session.scss';
 
 class LoginForm extends React.Component {
