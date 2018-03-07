@@ -1,6 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import './signup.scss';
+import { Link } from 'react-router-dom';
+
+import { signUp } from '../SessionActions';
+import './session.scss';
 
 class SignupForm extends React.Component {
   constructor(props) {
@@ -27,58 +30,72 @@ class SignupForm extends React.Component {
     e.preventDefault();
 
     const newUser = Object.assign({}, this.state);
-    // create a user, post.
+    this.props.signUp(newUser);
   }
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
+      <form
+        className="session-form"
+        onSubmit={this.handleSubmit}
+      >
+        <div className="session-form-header">
+          <h1>Sign up</h1>
+        <Link to="/login">Log in instead?</Link>
+        </div>
+        <label htmlFor="email">
           Email
           <input
+            id="email"
             autoComplete="email"
             type="email"
             onChange={this.handleChange('email')}
+            autoFocus
           />
         </label>
-        <label>
+        <label htmlFor="username">
           Username
           <input
+            id="username"
             autoComplete="username"
             type="text"
             onChange={this.handleChange('displayName')}
           />
         </label>
-        <label>
+        <label htmlFor="password">
           Password
           <input
+            id="password"
             autoComplete="off"
             type="password"
             onChange={this.handleChange('password')}
           />
         </label>
-        <label>
+        <label htmlFor="confirmPassword">
           Confirm password
           <input
+            id="confirmPassword"
             autoComplete="off"
             type="password"
             onChange={this.handleChange('confirmPassword')}
           />
         </label>
-        <button>
-          Create user
-        </button>
+        <div className="session-form-bottom">
+          <button>
+            Sign up
+          </button>
+          <a className="session-form-button" href="/api/auth/google">Sign up with Google</a>
+        </div>
       </form>
     );
   }
 }
 
-export default SignupForm;
+const mapDispatchToProps = dispatch => ({
+  signUp: newUser => dispatch(signUp(newUser)),
+});
 
-// const mapStateToProps = () => ({
-//
-// });
-//
-// export default connect(
-//   mapStateToProps
-// )(SignupForm);
+export default connect(
+  null,
+  mapDispatchToProps,
+)(SignupForm);

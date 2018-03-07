@@ -1,41 +1,59 @@
-import Express from "express";
-import bodyParser from "body-parser";
-import compression from "compression";
-import mongoose from "mongoose";
-import path from "path";
+import Express from 'express';
+import ExpressValidator from 'express-validator';
+import session from 'express-session';
+import connectMongo from 'connect-mongo';
+import bodyParser from 'body-parser';
+import compression from 'compression';
+import mongoose from 'mongoose';
+import path from 'path';
+import passport from 'passport';
 
-import React from "react";
-import { Provider } from "react-redux";
-import { renderToString } from "react-dom/server";
-import { StaticRouter, matchPath } from "react-router";
+import React from 'react';
+import { Provider } from 'react-redux';
+import { renderToString } from 'react-dom/server';
+import { StaticRouter, matchPath } from 'react-router';
 
-import App from "../client/App";
-import configureStore from "../client/store";
-import serverConfig from "./config";
-import routes from "../client/routes";
-import userRoutes from "./routes/user.routes";
-import mixableRoutes from "./routes/mixable.routes";
+import App from '../client/App';
+import configureStore from '../client/store';
+import serverConfig from './config';
+import routes from '../client/routes';
+import userRoutes from './routes/user.routes';
+import mixableRoutes from './routes/mixable.routes';
 
-const isDevMode = Boolean(process.env.NODE_ENV === "development");
-const isProdMode = Boolean(process.env.NODE_ENV === "production");
+const isDevMode = Boolean(process.env.NODE_ENV === 'development');
+const isProdMode = Boolean(process.env.NODE_ENV === 'production');
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect(serverConfig.mongoURL, error => {
+mongoose.connect(serverConfig.mongoURL, (error) => {
   if (error) {
-    console.error("Please make sure MongoDB is installed first.");
+    console.error('Please make sure MongoDB is installed first.');
     throw error;
   }
 });
 
 const app = new Express();
 
+// https://github.com/expressjs/session#compatible-session-stores
+const MongoStore = connectMongo(session);
+
+app.use(ExpressValidator());
 app.use(compression());
-app.use(bodyParser.json({ limit: "20mb" }));
-app.use(bodyParser.urlencoded({ limit: "20mb", extended: false }));
-app.use(Express.static(path.resolve(__dirname, "../dist")));
-app.use("/api", userRoutes);
-app.use("/api", mixableRoutes);
+app.use(bodyParser.json({ limit: '20mb' }));
+app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
+app.use(Express.static(path.resolve(__dirname, '../dist')));
+app.use(session({
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/api', userRoutes);
+app.use('/api', mixableRoutes);
 
 const renderFullPage = (html, preloadedState) => {
   return `
@@ -44,7 +62,7 @@ const renderFullPage = (html, preloadedState) => {
       <head>
         <title>mixd</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/style.css">
       </head>
       <body>
@@ -61,20 +79,7 @@ const renderFullPage = (html, preloadedState) => {
   `;
 };
 
-const renderError = err => {
-  const softTab = "&#32;&#32;&#32;&#32;";
-  const errTrace = isProdMode
-    ? `
-      :<br><br><pre style="color:red">${softTab}${err.stack.replace(
-        /\n/g,
-        `<br>${softTab}`
-      )}</pre>
-    `
-    : "";
-  return renderFullPage(`Server Error ${errTrace}`, {});
-};
-
-app.get("*", (req, res, next) => {
+app.get('*', (req, res, next) => {
   const store = configureStore();
   const promises = routes.reduce((accumulator, route) => {
     if (
@@ -95,19 +100,27 @@ app.get("*", (req, res, next) => {
       const context = {};
       const content = renderToString(
         <Provider store={store}>
-          <StaticRouter location={req.url} context={context}>
+          <StaticRouter
+            location={req.url}
+            context={context}
+          >
             <App />
           </StaticRouter>
         </Provider>
       );
 
       const initialState = store.getState();
-      res.send(renderFullPage(content, initialState));
+      let preloadedUser = {};
+      if (req.user && req.user._doc) {
+        preloadedUser = { session: req.user._doc }
+      }
+      const preloadedState = Object.assign({}, initialState, preloadedUser);
+      res.send(renderFullPage(content, preloadedState));
     })
     .catch(next);
 });
 
-app.listen(serverConfig.port, error => {
+app.listen(serverConfig.port, (error) => {
   if (!error) {
     console.log(`mixd is currently running on port ${serverConfig.port}`);
   }

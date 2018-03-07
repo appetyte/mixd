@@ -1,4 +1,4 @@
-import callApi from '../../util/apiCaller';
+import callApi from 'util/apiCaller';
 
 export const RECEIVE_CURRENT_USER = 'RECEIVE_CURRENT_USER';
 
@@ -7,15 +7,17 @@ export const receiveCurrentUser = currentUser => ({
   currentUser,
 });
 
-export const logIn = newUser => dispatch => (
-  callApi('login', 'post', { newUser })
+export const logIn = user => dispatch => (
+  callApi('login', 'post', user)
     .then(payloadWithUser => (
       dispatch(receiveCurrentUser(payloadWithUser))
-    ))
+    ), error => {
+      console.log(error);
+    })
 );
 
-export const signUp = user => dispatch => (
-  callApi('signup', 'post', { user })
+export const signUp = newUser => dispatch => (
+  callApi('signup', 'post', newUser)
     .then(payloadWithUser => (
       dispatch(receiveCurrentUser(payloadWithUser))
     ))

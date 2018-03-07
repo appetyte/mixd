@@ -1,6 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import './login.scss';
+import { Link } from 'react-router-dom';
+
+import { logIn } from '../SessionActions';
+import './session.scss';
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -26,59 +29,55 @@ class LoginForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const newUser = Object.assign({}, this.state);
-    // login a user, post.
+    const user = Object.assign({}, this.state);
+    this.props.logIn(user);
   }
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
-          Email
+      <form
+        className="session-form"
+        onSubmit={this.handleSubmit}
+      >
+        <div className="session-form-header">
+          <h1>Log in</h1>
+          <Link to="/signup">Create account instead?</Link>
+        </div>
+        <label htmlFor="email">
           <input
+            id="email"
             autoComplete="email"
             type="email"
             onChange={this.handleChange('email')}
+            placeholder="Email address"
+            autoFocus
           />
         </label>
-        <label>
-          Username
+        <label htmlFor="password">
           <input
-            autoComplete="username"
-            type="text"
-            onChange={this.handleChange('displayName')}
-          />
-        </label>
-        <label>
-          Password
-          <input
+            htmlFor="password"
             autoComplete="off"
             type="password"
             onChange={this.handleChange('password')}
+            placeholder="Password"
           />
         </label>
-        <label>
-          Confirm password
-          <input
-            autoComplete="off"
-            type="password"
-            onChange={this.handleChange('confirmPassword')}
-          />
-        </label>
-        <button>
-          Create user
-        </button>
+        <div className="session-form-bottom">
+          <button>
+            Log in
+          </button>
+          <a className="session-form-button" href="/api/auth/google">Log in with Google</a>
+        </div>
       </form>
     );
   }
 }
 
-export default LoginForm;
+const mapDispatchToProps = dispatch => ({
+  logIn: newUser => dispatch(logIn(newUser)),
+});
 
-// const mapStateToProps = () => ({
-//
-// });
-//
-// export default connect(
-//   mapStateToProps
-// )(LoginForm);
+export default connect(
+  null,
+  mapDispatchToProps,
+)(LoginForm);

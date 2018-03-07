@@ -1,15 +1,15 @@
-const path = require("path");
-const webpack = require("webpack");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const path = require('path');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // https://github.com/webpack/webpack/issues/1754
-require("babel-core/register")({
-  presets: ["env", "react"]
+require('babel-core/register')({
+  presets: ['env', 'react']
 });
-require.extensions[".scss"] = () => {
+require.extensions['.scss'] = () => {
   return;
 };
-require.extensions[".css"] = () => {
+require.extensions['.css'] = () => {
   return;
 };
 
@@ -29,16 +29,16 @@ const prodPlugins = [
 const defaultPlugins = [new ExtractTextPlugin("dist/style.css")];
 
 const plugins =
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === 'production'
     ? defaultPlugins.concat(prodPlugins)
     : defaultPlugins;
 
 module.exports = {
   context: __dirname,
-  entry: "./client/index.js",
+  entry: './client/index.js',
   output: {
     path: __dirname,
-    filename: "dist/bundle.js"
+    filename: 'dist/bundle.js'
   },
   plugins,
   resolve: {
@@ -54,20 +54,20 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         query: {
-          presets: ["react", "env"]
-        }
+          presets: ['react', 'env'],
+        },
       },
       {
         test: /\.scss$/,
         exclude: /node_modules/,
         loader: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: ["css-loader", "sass-loader"]
-        })
-      }
-    ]
+          fallback: 'style-loader',
+          use: ['css-loader', 'sass-loader'],
+        }),
+      },
+    ],
   },
-  devtool: "source-map"
+  devtool: 'source-map',
 };
