@@ -3,8 +3,9 @@ import { Route, Switch } from 'react-router-dom';
 
 import App from './App';
 import Header from './modules/Header/components/Header';
-import LoginForm from './modules/Session/components/LoginForm';
-import SignupForm from './modules/Session/components/SignupForm';
+import LoginForm from 'Session/components/LoginForm';
+import SignupForm from 'Session/components/SignupForm';
+import MixableIndex from 'Mixable/components/MixableIndexContainer';
 
 export default [
   { component: App,
@@ -21,6 +22,11 @@ export default [
         exact: true,
         component: SignupForm,
       },
+      {
+        path: '/mixables',
+        exact: true,
+        component: MixableIndex
+      }
     ]
   }
 ];

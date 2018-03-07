@@ -85,7 +85,7 @@ class SignupForm extends React.Component {
             Sign up
           </button>
           <a className="session-form-button" href="/api/auth/google">Sign up with Google</a>
-      </div>
+        </div>
       </form>
     );
   }

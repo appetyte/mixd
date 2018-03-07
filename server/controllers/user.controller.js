@@ -23,6 +23,8 @@ export const signup = async (req, res, next) => {
     displayName: req.body.displayName,
   });
 
+  // FIXME:
+  // await User.registerAsync(newUser, req.body.password);
   await User.register(newUser, req.body.password)
     .catch((errors) => {
       res.json({ errors });

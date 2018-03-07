@@ -1,0 +1,36 @@
+.mixableShow__transition-enter {
+  transform: translateX(100%);
+}
+.mixableShow__transition-enter-active {
+  transform: translateX(0);
+  transition: transform 100ms ease-out;
+}
+.mixableShow__transition-exit {
+  transform: translateX(0);
+}
+.mixableShow__transition-exit-active {
+  transform: translateX(100%);
+  transition: transform 100ms ease-in;
+}
+
+.mixableShow__title {
+  text-align: center;
+}
+
+.mixableShow__image {
+  display: block;
+  margin: 0 auto;
+}
+
+.mixableShow__steps {
+  -webkit-padding-start: 15px;
+}
+
+.mixableShow__step {
+  -webkit-margin-after: 5px;
+}
+
+.mixableShow__bottomFiller {
+  width: 1px;
+  height: 50px;
+}

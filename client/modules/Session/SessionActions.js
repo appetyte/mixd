@@ -1,4 +1,4 @@
-import callApi from '../../util/apiCaller';
+import callApi from 'util/apiCaller';
 
 export const RECEIVE_CURRENT_USER = 'RECEIVE_CURRENT_USER';
 

@@ -68,22 +68,15 @@ const renderFullPage = (html, preloadedState) => {
       <body>
         <div id="root">${html}</div>
         <script>
-          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')};
+          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(
+            /</g,
+            "\\u003c"
+          )};
         </script>
         <script src="/bundle.js"></script>
       </body>
     </html>
   `;
-};
-
-const renderError = (err) => {
-  const softTab = '&#32;&#32;&#32;&#32;';
-  const errTrace = isProdMode
-    ? (`
-      :<br><br><pre style="color:red">${softTab}${err.stack.replace(/\n/g, `<br>${softTab}`)}</pre>
-    `)
-    : '';
-  return renderFullPage(`Server Error ${errTrace}`, {});
 };
 
 app.get('*', (req, res, next) => {
@@ -94,7 +87,9 @@ app.get('*', (req, res, next) => {
       route.component &&
       route.component.initialAction
     ) {
-      accumulator.push(Promise.resolve(store.dispatch(route.component.initialAction())));
+      accumulator.push(
+        Promise.resolve(store.dispatch(route.component.initialAction()))
+      );
     }
 
     return accumulator;
