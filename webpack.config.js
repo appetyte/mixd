@@ -43,7 +43,7 @@ module.exports = {
   },
   plugins,
   resolve: {
-    extensions: ['.scss', '.js', '.jsx', '*'],
+    extensions: ['.js', '.jsx', '.scss', '*'],
   },
   module: {
     loaders: [
