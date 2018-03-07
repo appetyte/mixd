@@ -9,6 +9,7 @@ export const API_URL =
 export default function callApi(endpoint, method = 'get', body) {
   return fetch(`${API_URL}/${endpoint}`, {
     headers: { 'content-type': 'application/json' },
+    credentials: 'include',
     method,
     body: JSON.stringify(body),
   })
