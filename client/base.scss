@@ -1,1 +1,15 @@
+body {
+  font-family: sans-serif;
+}
 
+.img {
+  background: url(https://s3.amazonaws.com/basscase-pro/songs/images/000/000/076/original/rose-2421626_1920.jpg?1517199726);
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: center center;
+}
+
+.img--medium {
+  width: 200px;
+  height: 200px;
+}

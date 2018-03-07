@@ -43,7 +43,8 @@ module.exports = {
   plugins,
   resolve: {
     alias: {
-      apiCaller: "client/util/apiCaller"
+      modules: path.resolve(__dirname, "client/modules"),
+      util: path.resolve(__dirname, "client/util")
     },
     extensions: [".scss", ".js", ".jsx", "*"]
   },

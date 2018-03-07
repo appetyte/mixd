@@ -1,0 +1,31 @@
+.mixableShow__transition-enter {
+  transform: scale(0);
+}
+.mixableShow__transition-enter-active {
+  transform: scale(1);
+  transition: transform 100ms ease;
+}
+.mixableShow__transition-exit {
+  transform: scale(1);
+}
+.mixableShow__transition-exit-active {
+  transform: scale(0);
+  transition: transform 100ms ease;
+}
+
+.mixableShow__title {
+  text-align: center;
+}
+
+.mixableShow__image {
+  display: block;
+  margin: 0 auto;
+}
+
+.mixableShow__steps {
+  -webkit-padding-start: 15px;
+}
+
+.mixableShow__step {
+  -webkit-margin-after: 5px;
+}

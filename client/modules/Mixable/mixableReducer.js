@@ -9,7 +9,7 @@ const mixableReducer = (state = initialState, action) => {
   switch (action.type) {
     case RECEIVE_MIXABLE:
       newState = Object.assign({}, state);
-      newState[action.mixable.id] = action.mixable;
+      newState[action.mixable._id] = action.mixable;
       return newState;
     default:
       return state;
