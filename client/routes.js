@@ -1,9 +1,10 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import App from "./App";
-import LoginForm from "./modules/Session/components/LoginForm";
-import SignupForm from "./modules/Session/components/SignupForm";
-import MixableShow from "./modules/Mixable/components/MixableShowContainer";
+import LoginForm from "Session/components/LoginForm";
+import SignupForm from "Session/components/SignupForm";
+import MixableIndex from "Mixable/components/MixableIndexContainer";
+// import MixableShow from "Mixable/components/MixableShowContainer";
 // // import NotFoundPage from './pages/NotFoundPage';
 //
 export default [
@@ -21,9 +22,9 @@ export default [
         component: SignupForm
       },
       {
-        path: "/mixables/:id",
+        path: "/mixables",
         exact: true,
-        component: MixableShow
+        component: MixableIndex
       }
     ]
   }

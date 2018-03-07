@@ -43,10 +43,11 @@ module.exports = {
   plugins,
   resolve: {
     alias: {
-      modules: path.resolve(__dirname, "client/modules"),
+      Session: path.resolve(__dirname, "client/modules/Session"),
+      Mixable: path.resolve(__dirname, "client/modules/Mixable"),
       util: path.resolve(__dirname, "client/util")
     },
-    extensions: [".scss", ".js", ".jsx", "*"]
+    extensions: [".js", ".jsx", ".scss", "*"]
   },
   module: {
     loaders: [
