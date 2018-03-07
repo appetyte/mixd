@@ -35,10 +35,6 @@ class MixableShow extends React.Component {
       return null;
     }
 
-    // const imgStyles = {
-    //   background: `url(${drink.imgUrl})`
-    // };
-
     const instructions = drink.instructions.split(". ");
 
     return (
@@ -57,13 +53,16 @@ class MixableShow extends React.Component {
           }}
           styles={{
             overlay: {
-              background: "transparent"
+              background: "transparent",
+              left: "auto",
+              height: "100vh",
+              overflow: "scroll",
+              width: "auto",
+              borderLeft: "2px solid black"
             },
             modal: {
               boxShadow: "none",
-              width: "150px",
-              border: "1px solid black",
-              borderRadius: "4px"
+              width: "150px"
             }
           }}
           animationDuration={100}
