@@ -6,13 +6,14 @@ export const transitionStyles = {
 };
 
 const overlay = {
-  background: "transparent",
+  background: "white",
   left: "auto",
   height: "100vh",
   overflow: "scroll",
   width: "auto",
   borderLeft: "2px solid black",
-  alignItems: "normal"
+  alignItems: "normal",
+  boxSizing: "content-box"
 };
 
 const modal = {

@@ -81,10 +81,10 @@ class MixableShow extends React.Component {
         />
         <h1 className="mixableShow__title">{drink._id}</h1>
 
-        <h4>Steps:</h4>
+        <h4 className="mixableShow__subTitle">Steps:</h4>
         {this.steps(instructions)}
 
-        <h4>Ingredients:</h4>
+        <h4 className="mixableShow__subTitle">Ingredients:</h4>
         {this.ingredients(drink)}
         <div className="mixableShow__bottomFiller" />
       </article>

@@ -1,10 +1,12 @@
 import { combineReducers } from "redux";
 import entities from "./entityReducer";
 import ui from "./uiReducer";
+import session from "Session/SessionReducer";
 
 const rootReducer = combineReducers({
   entities,
-  ui
+  ui,
+  session
 });
 
 export default rootReducer;
