@@ -25,7 +25,7 @@ passport.deserializeUser((id, done) => {
 });
 
 passport.use(
-  User.createStrategy(),
+  User.createStrategy()
 );
 
 passport.use(
