@@ -50,6 +50,7 @@ class LoginForm extends React.Component {
             type="email"
             onChange={this.handleChange('email')}
             placeholder="Email address"
+            autoFocus
           />
         </label>
         <label htmlFor="password">

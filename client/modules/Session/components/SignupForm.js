@@ -50,6 +50,7 @@ class SignupForm extends React.Component {
             autoComplete="email"
             type="email"
             onChange={this.handleChange('email')}
+            autoFocus
           />
         </label>
         <label htmlFor="username">
