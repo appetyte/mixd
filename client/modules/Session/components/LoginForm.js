@@ -1,8 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import './login.scss';
+import { Link } from 'react-router-dom';
 
-class SignupForm extends React.Component {
+import { logIn } from '../SessionActions';
+import './session.scss';
+
+class LoginForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -26,25 +29,55 @@ class SignupForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const newUser = Object.assign({}, this.state);
+    const user = Object.assign({}, this.state);
+    this.props.logIn(user);
   }
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <input type="email" onChange={this.handleChange('email')} />
-        <input type="text" onChange={this.handleChange('displayName')} />
-        <input type="password" onChange={this.handleChange('password')} />
-        <input type="password" onChange={this.handleChange('confirmPassword')} />
+      <form
+        className="session-form"
+        onSubmit={this.handleSubmit}
+      >
+        <div className="session-form-header">
+          <h1>Log in</h1>
+          <Link to="/signup">Create account instead?</Link>
+        </div>
+        <label htmlFor="email">
+          <input
+            id="email"
+            autoComplete="email"
+            type="email"
+            onChange={this.handleChange('email')}
+            placeholder="Email address"
+            autoFocus
+          />
+        </label>
+        <label htmlFor="password">
+          <input
+            htmlFor="password"
+            autoComplete="off"
+            type="password"
+            onChange={this.handleChange('password')}
+            placeholder="Password"
+          />
+        </label>
+        <div className="session-form-bottom">
+          <button>
+            Log in
+          </button>
+          <a className="session-form-button" href="/api/auth/google">Log in with Google</a>
+        </div>
       </form>
     );
   }
 }
 
-const mapStateToProps = () => ({
-
+const mapDispatchToProps = dispatch => ({
+  logIn: newUser => dispatch(logIn(newUser)),
 });
 
 export default connect(
-  mapStateToProps
-)(SignupForm);
+  null,
+  mapDispatchToProps,
+)(LoginForm);

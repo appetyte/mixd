@@ -15,35 +15,39 @@ require.extensions['.css'] = () => {
 
 const prodPlugins = [
   new webpack.DefinePlugin({
-    'process.env': {
-      'NODE_ENV': JSON.stringify('production'),
-    },
+    "process.env": {
+      NODE_ENV: JSON.stringify("production")
+    }
   }),
   new webpack.optimize.UglifyJsPlugin({
     compress: {
-      warnings: true,
-    },
-  }),
+      warnings: true
+    }
+  })
 ];
 
-const defaultPlugins = [
-  new ExtractTextPlugin('dist/style.css')
-];
+const defaultPlugins = [new ExtractTextPlugin("dist/style.css")];
 
-const plugins = process.env.NODE_ENV === 'production'
-  ? defaultPlugins.concat(prodPlugins)
-  : defaultPlugins;
+const plugins =
+  process.env.NODE_ENV === 'production'
+    ? defaultPlugins.concat(prodPlugins)
+    : defaultPlugins;
 
 module.exports = {
   context: __dirname,
   entry: './client/index.js',
   output: {
     path: __dirname,
-    filename: 'dist/bundle.js',
+    filename: 'dist/bundle.js'
   },
   plugins,
   resolve: {
-    extensions: ['.scss', '.js', '.jsx', '*'],
+    alias: {
+      Session: path.resolve(__dirname, "client/modules/Session"),
+      Mixable: path.resolve(__dirname, "client/modules/Mixable"),
+      util: path.resolve(__dirname, "client/util")
+    },
+    extensions: [".js", ".jsx", ".scss", "*"]
   },
   module: {
     loaders: [

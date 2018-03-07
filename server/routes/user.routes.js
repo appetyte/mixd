@@ -12,6 +12,10 @@ router
   );
 
 router.route('/login').post(AuthController.login);
+
+router.route('/auth/google').get(AuthController.googleLogin);
+router.route('/auth/google/callback').get(AuthController.googleLoginCallback);
+
 router.route('/logout').get(AuthController.logout);
 
 export default router;
