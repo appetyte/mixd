@@ -1,0 +1,5627 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  html,
+  body {
+    margin: 0;
+    height: 100%;
+  }
+
+  .links line {
+    stroke: #999;
+    stroke-opacity: 0.05;
+  }
+  .links line.highlight {
+    stroke: #999;
+    stroke-opacity: 1;
+  }
+
+  .nodes circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+    opacity: 0.5;
+  }
+
+  .nodes circle.highlight {
+    stroke: #fff;
+    stroke-width: 1.5px;
+    opacity: 1;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    background-color: #494949;
+  }
+
+  div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 60px;
+    /* height: 28px; */
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+</style>
+<svg></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://unpkg.com/d3-force-cluster@latest"></script>
+<script>
+
+  const svg = d3.select("svg")
+  const tooltip = d3.select("body")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+
+  const nodesData = [
+        {
+            "name": "Ginger ale",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 15,
+            "inShelf": true
+        },
+        {
+            "name": "Jack Daniels",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 5,
+            "inShelf": true
+        },
+        {
+            "name": "Orange juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 58,
+            "inShelf": true
+        },
+        {
+            "name": "Rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 20,
+            "inShelf": true
+        },
+        {
+            "name": "Vodka",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 84,
+            "inShelf": true
+        },
+        {
+            "name": "'57 Chevy with a White License Plate",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "155 Belmont",
+            "type": "R",
+            "glassType": "White wine glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "3 Wise Men",
+            "type": "R",
+            "glassType": "Collins glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "3-Mile Long Island Iced Tea",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "50/50",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "501 Blue",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "9 1/2 Weeks",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "A Day at the Beach",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "A Gilligan's Island",
+            "type": "R",
+            "glassType": "Collins glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "A Night In Old Mandalay",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "A midsummernight dream",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "A.D.M. (After Dinner Mint)",
+            "type": "R",
+            "glassType": "Irish coffee cup",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Abilene",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Absinthe #2",
+            "type": "R",
+            "glassType": "Jar",
+            "category": "Homemade Liqueur",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Absolutely Cranberry Smash",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Absolutely Fabulous",
+            "type": "R",
+            "glassType": "Champagne flute",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Absolutly Screwed Up",
+            "type": "R",
+            "glassType": "Collins glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Adam Bomb",
+            "type": "R",
+            "glassType": "Margarita/Coupette glass",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Adam Sunrise",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Addison Special",
+            "type": "R",
+            "glassType": "Old-fashioned glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Adios Amigos Cocktail",
+            "type": "R",
+            "glassType": "Martini Glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Affair",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "After sex",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Afterglow",
+            "type": "R",
+            "glassType": "Highball Glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Alice Cocktail",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Amaretto Stone Sour",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Other/Unknown",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Amaretto Stone Sour #3",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Other/Unknown",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Amaretto Sunrise",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Angelica Liqueur",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Homemade Liqueur",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Apello",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Other/Unknown",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Apple Cider Punch #1",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Applejack",
+            "type": "RI",
+            "glassType": "Cocktail glass",
+            "category": "Cocktail",
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Apricot punch",
+            "type": "R",
+            "glassType": "Punch bowl",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Arctic Fish",
+            "type": "R",
+            "glassType": "Beer pilsner",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Arizona Antifreeze",
+            "type": "R",
+            "glassType": "Shot glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Arizona Twister",
+            "type": "R",
+            "glassType": "Hurricane glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Army special",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Artillery Punch",
+            "type": "R",
+            "glassType": "Punch bowl",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Atlantic Sun",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Atomic Lokade",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Autodafé",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Avalon",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Aztec Punch",
+            "type": "R",
+            "glassType": "Punch bowl",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Bahama Mama",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Banana Milk Shake",
+            "type": "R",
+            "glassType": "White wine glass",
+            "category": "Milk / Float / Shake",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Barracuda",
+            "type": "R",
+            "glassType": "Margarita glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Belgian Blue",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Soft Drink / Soda",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Bellini Martini",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Berry Deadly",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Black Forest Shake",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Milk / Float / Shake",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Black Russian",
+            "type": "R",
+            "glassType": "Old-fashioned glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Bloody Mary",
+            "type": "R",
+            "glassType": "Old-fashioned glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Blue Hurricane",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Blue Lagoon",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Blue Mountain",
+            "type": "R",
+            "glassType": "Old-fashioned glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Brain Fart",
+            "type": "R",
+            "glassType": "Punch bowl",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Bruised Heart",
+            "type": "R",
+            "glassType": "Shot glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Bubble Gum",
+            "type": "R",
+            "glassType": "Shot glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Butter Baby",
+            "type": "R",
+            "glassType": "Beer mug",
+            "category": "Milk / Float / Shake",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Caribbean Orange Liqueur",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Homemade Liqueur",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Cherry Electric Lemonade",
+            "type": "R",
+            "glassType": "Pint glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Chocolate Black Russian",
+            "type": "R",
+            "glassType": "Champagne flute",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Coffee Liqueur",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Homemade Liqueur",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Coffee-Vodka",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Homemade Liqueur",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Cosmopolitan Martini",
+            "type": "R",
+            "glassType": "Cocktail Glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Cranberry Punch",
+            "type": "R",
+            "glassType": "Punch Bowl",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Cream Soda",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Darkwood Sling",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Soft Drink / Soda",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Dirty Martini",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Dragonfly",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Egg Nog - Healthy",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Espresso Martini",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Flaming Dr. Pepper",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Freddy Kruger",
+            "type": "R",
+            "glassType": "Shot glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "French Martini",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Fruit Shake",
+            "type": "R",
+            "glassType": "Highball Glass",
+            "category": "Other/Unknown",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "GG",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Gideon's Green Dinosaur",
+            "type": "R",
+            "glassType": "Collins glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Godchild",
+            "type": "R",
+            "glassType": "Champagne flute",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Godmother",
+            "type": "R",
+            "glassType": "Old-fashioned glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Greyhound",
+            "type": "R",
+            "glassType": "Collins glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Happy Skipper",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Harvey Wallbanger",
+            "type": "R",
+            "glassType": "Collins glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Hemingway Special",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Homemade Kahlua",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Homemade Liqueur",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Horse's Neck",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Ice Pick #1",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Ipamena",
+            "type": "R",
+            "glassType": "Wine Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Irish Curdling Cow",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Irish Russian",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Beer",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Irish Spring",
+            "type": "R",
+            "glassType": "Collins glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Jackhammer",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Jamaican Coffee",
+            "type": "R",
+            "glassType": "Champagne flute",
+            "category": "Coffee / Tea",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Jello shots",
+            "type": "R",
+            "glassType": "Shot glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Jitterbug",
+            "type": "R",
+            "glassType": "Cocktail Glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Kamikaze",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Kool-Aid Shot",
+            "type": "R",
+            "glassType": "Old-fashioned glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Kool-Aid Slammer",
+            "type": "R",
+            "glassType": "Shot glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Long Island Iced Tea",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Long Island Tea",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Long vodka",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Lunch Box",
+            "type": "R",
+            "glassType": "Pint glass",
+            "category": "Beer",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Mimosa",
+            "type": "R",
+            "glassType": "Champagne flute",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Monkey Gland",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Moscow Mule",
+            "type": "R",
+            "glassType": "Copper Mug",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Mudslinger",
+            "type": "R",
+            "glassType": "Punch bowl",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "National Aquarium",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Orange Crush",
+            "type": "R",
+            "glassType": "Shot glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Orange Oasis",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Orange Push-up",
+            "type": "R",
+            "glassType": "Hurricane glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Orange Whip",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Other/Unknown",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Orangeade",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Oreo Mudslide",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Orgasm",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Pink Panty Pulldowns",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Pink Penocha",
+            "type": "R",
+            "glassType": "Punch bowl",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Planter's Punch",
+            "type": "R",
+            "glassType": "Collins glass",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Popped cherry",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Pysch Vitamin Light",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Quick-sand",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Radioactive Long Island Iced Tea",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Rail Splitter",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Rum Cooler",
+            "type": "R",
+            "glassType": "Collins glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Rum Punch",
+            "type": "R",
+            "glassType": "Punch bowl",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Rum Runner",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Rum Screwdriver",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Rum Toddy",
+            "type": "R",
+            "glassType": "Old-fashioned glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Russian Spring Punch",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "San Francisco",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Sangria #1",
+            "type": "R",
+            "glassType": "Pitcher",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Screaming Orgasm",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Screwdriver",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Sea breeze",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Sex on the Beach",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Shark Attack",
+            "type": "R",
+            "glassType": "Pitcher",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Shot-gun",
+            "type": "R",
+            "glassType": "Shot glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Smut",
+            "type": "R",
+            "glassType": "Beer mug",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Space Odyssey",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Spiced Peach Punch",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Stone Sour",
+            "type": "R",
+            "glassType": "Whiskey sour glass",
+            "category": "Ordinary Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Sunny Holiday Punch",
+            "type": "R",
+            "glassType": "Punch bowl",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Tennesee Mud",
+            "type": "R",
+            "glassType": "Coffee Mug",
+            "category": "Coffee / Tea",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Tequila Sunrise",
+            "type": "R",
+            "glassType": "Highball glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Tia-Maria",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Homemade Liqueur",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Vesper",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Vodka Fizz",
+            "type": "R",
+            "glassType": "White wine glass",
+            "category": "Other/Unknown",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Wine Punch",
+            "type": "R",
+            "glassType": "Collins Glass",
+            "category": "Punch / Party Drink",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Zipperhead",
+            "type": "R",
+            "glassType": "Whiskey sour glass",
+            "category": "Shot",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Zippy's Revenge",
+            "type": "R",
+            "glassType": "Old-fashioned glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Zombie",
+            "type": "R",
+            "glassType": "Hurricane glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "Zorbatini",
+            "type": "R",
+            "glassType": "Cocktail glass",
+            "category": "Cocktail",
+            "recipesCount": 0,
+            "inShelf": false
+        },
+        {
+            "name": "151 proof rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "7-Up",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Absolut Citron",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Absolut Vodka",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Allspice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Almond",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Almond flavoring",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Amaretto",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 13,
+            "inShelf": false
+        },
+        {
+            "name": "Angelica root",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Angostura Bitters",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Angostura bitters",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Anise",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Apple cider",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Apple juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Apricot brandy",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Añejo rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Bailey's irish cream",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Banana",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Banana liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Beer",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Benedictine",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Berries",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Bitters",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Black Sambuca",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Blackberry brandy",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Blue Curacao",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 6,
+            "inShelf": false
+        },
+        {
+            "name": "Blueberry schnapps",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Bourbon",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Brandy",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Brown sugar",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Butterscotch schnapps",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Candy",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Caramel coloring",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Chambord raspberry liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Champagne",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Cherries",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Cherry",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Cherry Grenadine",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Cherry Heering",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Cherry brandy",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Cherry liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Chocolate ice-cream",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Chocolate syrup",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Cinnamon",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Cloves",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Club soda",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Coca-Cola",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Coconut liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Coconut rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Coffee",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 6,
+            "inShelf": false
+        },
+        {
+            "name": "Coffee liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Cognac",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Cointreau",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Condensed milk",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Coriander",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Corn syrup",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Cranberry Juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Cranberry juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 12,
+            "inShelf": false
+        },
+        {
+            "name": "Cream",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Cream of coconut",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Creme de Banane",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Creme de Cacao",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Creme de Cassis",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Dark Rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Dark rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Dr. Pepper",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Dry Vermouth",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Egg",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Everclear",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Food coloring",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Fresh Lime Juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Fruit",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Fruit juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Fruit punch",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Galliano",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Gin",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 13,
+            "inShelf": false
+        },
+        {
+            "name": "Gold rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Gold tequila",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Grand Marnier",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Grape soda",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Grapefruit Juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Grapefruit juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Grenadine",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 14,
+            "inShelf": false
+        },
+        {
+            "name": "Guinness stout",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Half-and-half",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Heavy cream",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Hot chocolate",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Ice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 19,
+            "inShelf": false
+        },
+        {
+            "name": "Iced tea",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Irish whiskey",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Jello",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Jim Beam",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Johnnie Walker",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Jägermeister",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Kahlua",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 5,
+            "inShelf": false
+        },
+        {
+            "name": "Kirschwasser",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Kool-Aid",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Lemon",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 6,
+            "inShelf": false
+        },
+        {
+            "name": "Lemon Juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Lemon juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 10,
+            "inShelf": false
+        },
+        {
+            "name": "Lemon peel",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 5,
+            "inShelf": false
+        },
+        {
+            "name": "Lemon-lime soda",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Lemonade",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 7,
+            "inShelf": false
+        },
+        {
+            "name": "Licorice root",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Light cream",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Light rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 6,
+            "inShelf": false
+        },
+        {
+            "name": "Lillet Blanc",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Lime",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 6,
+            "inShelf": false
+        },
+        {
+            "name": "Lime Juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Lime juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 5,
+            "inShelf": false
+        },
+        {
+            "name": "Lime juice cordial",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Limeade",
+            "type": "RI",
+            "glassType": "Highball glass",
+            "category": "Other/Unknown",
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Malibu rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Maraschino Liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Maraschino cherry",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Marjoram leaves",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Melon liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Midori melon liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Milk",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Mountain Dew",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Nutmeg",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Olive",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Olive Brine",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Orange",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Orange Curacao",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Orange Juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Oreo cookie",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Orgeat syrup",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Ouzo",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Passion fruit juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Passion fruit syrup",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Passoa",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Peach brandy",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Peach nectar",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Peach schnapps",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 6,
+            "inShelf": false
+        },
+        {
+            "name": "Peachtree schnapps",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Pepsi Cola",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Pernod",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Pineapple",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Pineapple Juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Pineapple juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 10,
+            "inShelf": false
+        },
+        {
+            "name": "Pink lemonade",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Pisang Ambon",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Powdered sugar",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Prosecco",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Raspberry Liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Red wine",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Rye whiskey",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Salt",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Sambuca",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Schweppes Russchian",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Sloe gin",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Soda water",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 5,
+            "inShelf": false
+        },
+        {
+            "name": "Sour mix",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 6,
+            "inShelf": false
+        },
+        {
+            "name": "Southern Comfort",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Spiced rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 3,
+            "inShelf": false
+        },
+        {
+            "name": "Sprite",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Strawberries",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Strawberry liqueur",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Strawberry schnapps",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Sugar",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 12,
+            "inShelf": false
+        },
+        {
+            "name": "Sugar Syrup",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Sugar syrup",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 5,
+            "inShelf": false
+        },
+        {
+            "name": "Surge",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Sweet and Sour",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "Sweet and sour",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 6,
+            "inShelf": false
+        },
+        {
+            "name": "Tabasco sauce",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Tea",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Tequila",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 9,
+            "inShelf": false
+        },
+        {
+            "name": "Tia maria",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Tomato juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Tonic water",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Triple Sec",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Triple sec",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 10,
+            "inShelf": false
+        },
+        {
+            "name": "Vanilla",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Vanilla Ice-Cream",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Vanilla extract",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 4,
+            "inShelf": false
+        },
+        {
+            "name": "Vanilla ice-cream",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Vanilla vodka",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Water",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 11,
+            "inShelf": false
+        },
+        {
+            "name": "Whipped cream",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 2,
+            "inShelf": false
+        },
+        {
+            "name": "White Creme de Menthe",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "White rum",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Wild Turkey",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Wine",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Worcestershire sauce",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Wormwood",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "Yoghurt",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        },
+        {
+            "name": "pineapple juice",
+            "type": "I",
+            "glassType": null,
+            "category": null,
+            "recipesCount": 1,
+            "inShelf": false
+        }
+    ];
+
+  const linksData = [
+        {
+            "source": "Ginger ale",
+            "target": "A Night In Old Mandalay"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Dragonfly"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Orange Oasis"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Rail Splitter"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Happy Skipper"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Cranberry Punch"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Moscow Mule"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Aztec Punch"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Cream Soda"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Rum Punch"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Absolutely Cranberry Smash"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "GG"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Absolutly Screwed Up"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Ipamena"
+        },
+        {
+            "source": "Ginger ale",
+            "target": "Horse's Neck"
+        },
+        {
+            "source": "Jack Daniels",
+            "target": "Jackhammer"
+        },
+        {
+            "source": "Jack Daniels",
+            "target": "3 Wise Men"
+        },
+        {
+            "source": "Jack Daniels",
+            "target": "Tennesee Mud"
+        },
+        {
+            "source": "Jack Daniels",
+            "target": "Applejack"
+        },
+        {
+            "source": "Jack Daniels",
+            "target": "Shot-gun"
+        },
+        {
+            "source": "Orange juice",
+            "target": "A Night In Old Mandalay"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Abilene"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Affair"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Blue Mountain"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Harvey Wallbanger"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Irish Spring"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Orange Oasis"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Rum Screwdriver"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Screwdriver"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Stone Sour"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Afterglow"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Alice Cocktail"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Orangeade"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Banana Milk Shake"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Fruit Shake"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Apple Cider Punch #1"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Artillery Punch"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Berry Deadly"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Sangria #1"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Spiced Peach Punch"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Sunny Holiday Punch"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Wine Punch"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Popped cherry"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Tequila Sunrise"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Addison Special"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Amaretto Stone Sour"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Lunch Box"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Darkwood Sling"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Amaretto Sunrise"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Orange Push-up"
+        },
+        {
+            "source": "Orange juice",
+            "target": "50/50"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Arctic Fish"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Bubble Gum"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Rum Punch"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Pysch Vitamin Light"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Apello"
+        },
+        {
+            "source": "Orange juice",
+            "target": "After sex"
+        },
+        {
+            "source": "Orange juice",
+            "target": "San Francisco"
+        },
+        {
+            "source": "Orange juice",
+            "target": "A Day at the Beach"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Space Odyssey"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Orange Crush"
+        },
+        {
+            "source": "Orange juice",
+            "target": "155 Belmont"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Quick-sand"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Apricot punch"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Mudslinger"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Amaretto Stone Sour #3"
+        },
+        {
+            "source": "Orange juice",
+            "target": "9 1/2 Weeks"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Absolutly Screwed Up"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Rum Runner"
+        },
+        {
+            "source": "Orange juice",
+            "target": "A Gilligan's Island"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Irish Curdling Cow"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Pink Penocha"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Orange Whip"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Arizona Twister"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Smut"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Monkey Gland"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Planter's Punch"
+        },
+        {
+            "source": "Orange juice",
+            "target": "Mimosa"
+        },
+        {
+            "source": "Rum",
+            "target": "Rum Cooler"
+        },
+        {
+            "source": "Rum",
+            "target": "Rum Toddy"
+        },
+        {
+            "source": "Rum",
+            "target": "Tia-Maria"
+        },
+        {
+            "source": "Rum",
+            "target": "Artillery Punch"
+        },
+        {
+            "source": "Rum",
+            "target": "Egg Nog - Healthy"
+        },
+        {
+            "source": "Rum",
+            "target": "National Aquarium"
+        },
+        {
+            "source": "Rum",
+            "target": "Zippy's Revenge"
+        },
+        {
+            "source": "Rum",
+            "target": "Aztec Punch"
+        },
+        {
+            "source": "Rum",
+            "target": "Rum Punch"
+        },
+        {
+            "source": "Rum",
+            "target": "Jamaican Coffee"
+        },
+        {
+            "source": "Rum",
+            "target": "Adam Bomb"
+        },
+        {
+            "source": "Rum",
+            "target": "Radioactive Long Island Iced Tea"
+        },
+        {
+            "source": "Rum",
+            "target": "Orange Whip"
+        },
+        {
+            "source": "Rum",
+            "target": "Brain Fart"
+        },
+        {
+            "source": "Rum",
+            "target": "Hemingway Special"
+        },
+        {
+            "source": "Rum",
+            "target": "Barracuda"
+        },
+        {
+            "source": "Rum",
+            "target": "Adios Amigos Cocktail"
+        },
+        {
+            "source": "Rum",
+            "target": "Zombie"
+        },
+        {
+            "source": "Rum",
+            "target": "Bahama Mama"
+        },
+        {
+            "source": "Rum",
+            "target": "Blue Hurricane"
+        },
+        {
+            "source": "Vodka",
+            "target": "Black Russian"
+        },
+        {
+            "source": "Vodka",
+            "target": "Bloody Mary"
+        },
+        {
+            "source": "Vodka",
+            "target": "Blue Lagoon"
+        },
+        {
+            "source": "Vodka",
+            "target": "Blue Mountain"
+        },
+        {
+            "source": "Vodka",
+            "target": "Chocolate Black Russian"
+        },
+        {
+            "source": "Vodka",
+            "target": "Godchild"
+        },
+        {
+            "source": "Vodka",
+            "target": "Godmother"
+        },
+        {
+            "source": "Vodka",
+            "target": "Harvey Wallbanger"
+        },
+        {
+            "source": "Vodka",
+            "target": "Kamikaze"
+        },
+        {
+            "source": "Vodka",
+            "target": "Long Island Tea"
+        },
+        {
+            "source": "Vodka",
+            "target": "Orgasm"
+        },
+        {
+            "source": "Vodka",
+            "target": "Screwdriver"
+        },
+        {
+            "source": "Vodka",
+            "target": "Sex on the Beach"
+        },
+        {
+            "source": "Vodka",
+            "target": "Autodafé"
+        },
+        {
+            "source": "Vodka",
+            "target": "Absinthe #2"
+        },
+        {
+            "source": "Vodka",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Vodka",
+            "target": "Caribbean Orange Liqueur"
+        },
+        {
+            "source": "Vodka",
+            "target": "Coffee Liqueur"
+        },
+        {
+            "source": "Vodka",
+            "target": "Coffee-Vodka"
+        },
+        {
+            "source": "Vodka",
+            "target": "Popped cherry"
+        },
+        {
+            "source": "Vodka",
+            "target": "Atomic Lokade"
+        },
+        {
+            "source": "Vodka",
+            "target": "Kool-Aid Shot"
+        },
+        {
+            "source": "Vodka",
+            "target": "National Aquarium"
+        },
+        {
+            "source": "Vodka",
+            "target": "Long vodka"
+        },
+        {
+            "source": "Vodka",
+            "target": "Flaming Dr. Pepper"
+        },
+        {
+            "source": "Vodka",
+            "target": "Moscow Mule"
+        },
+        {
+            "source": "Vodka",
+            "target": "Sea breeze"
+        },
+        {
+            "source": "Vodka",
+            "target": "Atlantic Sun"
+        },
+        {
+            "source": "Vodka",
+            "target": "Oreo Mudslide"
+        },
+        {
+            "source": "Vodka",
+            "target": "Pink Panty Pulldowns"
+        },
+        {
+            "source": "Vodka",
+            "target": "Ice Pick #1"
+        },
+        {
+            "source": "Vodka",
+            "target": "Screaming Orgasm"
+        },
+        {
+            "source": "Vodka",
+            "target": "'57 Chevy with a White License Plate"
+        },
+        {
+            "source": "Vodka",
+            "target": "Belgian Blue"
+        },
+        {
+            "source": "Vodka",
+            "target": "Cosmopolitan Martini"
+        },
+        {
+            "source": "Vodka",
+            "target": "Addison Special"
+        },
+        {
+            "source": "Vodka",
+            "target": "Aztec Punch"
+        },
+        {
+            "source": "Vodka",
+            "target": "Kool-Aid Slammer"
+        },
+        {
+            "source": "Vodka",
+            "target": "A.D.M. (After Dinner Mint)"
+        },
+        {
+            "source": "Vodka",
+            "target": "Arctic Fish"
+        },
+        {
+            "source": "Vodka",
+            "target": "Freddy Kruger"
+        },
+        {
+            "source": "Vodka",
+            "target": "Bubble Gum"
+        },
+        {
+            "source": "Vodka",
+            "target": "Jello shots"
+        },
+        {
+            "source": "Vodka",
+            "target": "After sex"
+        },
+        {
+            "source": "Vodka",
+            "target": "San Francisco"
+        },
+        {
+            "source": "Vodka",
+            "target": "Avalon"
+        },
+        {
+            "source": "Vodka",
+            "target": "3-Mile Long Island Iced Tea"
+        },
+        {
+            "source": "Vodka",
+            "target": "Orange Crush"
+        },
+        {
+            "source": "Vodka",
+            "target": "155 Belmont"
+        },
+        {
+            "source": "Vodka",
+            "target": "Adam Sunrise"
+        },
+        {
+            "source": "Vodka",
+            "target": "A midsummernight dream"
+        },
+        {
+            "source": "Vodka",
+            "target": "Apricot punch"
+        },
+        {
+            "source": "Vodka",
+            "target": "Black Forest Shake"
+        },
+        {
+            "source": "Vodka",
+            "target": "Bellini Martini"
+        },
+        {
+            "source": "Vodka",
+            "target": "Jitterbug"
+        },
+        {
+            "source": "Vodka",
+            "target": "Shark Attack"
+        },
+        {
+            "source": "Vodka",
+            "target": "Adam Bomb"
+        },
+        {
+            "source": "Vodka",
+            "target": "Arizona Antifreeze"
+        },
+        {
+            "source": "Vodka",
+            "target": "Zipperhead"
+        },
+        {
+            "source": "Vodka",
+            "target": "A Gilligan's Island"
+        },
+        {
+            "source": "Vodka",
+            "target": "Zorbatini"
+        },
+        {
+            "source": "Vodka",
+            "target": "Vodka Fizz"
+        },
+        {
+            "source": "Vodka",
+            "target": "Radioactive Long Island Iced Tea"
+        },
+        {
+            "source": "Vodka",
+            "target": "Irish Curdling Cow"
+        },
+        {
+            "source": "Vodka",
+            "target": "Pink Penocha"
+        },
+        {
+            "source": "Vodka",
+            "target": "Orange Whip"
+        },
+        {
+            "source": "Vodka",
+            "target": "Bruised Heart"
+        },
+        {
+            "source": "Vodka",
+            "target": "Gideon's Green Dinosaur"
+        },
+        {
+            "source": "Vodka",
+            "target": "Irish Russian"
+        },
+        {
+            "source": "Vodka",
+            "target": "Homemade Kahlua"
+        },
+        {
+            "source": "Vodka",
+            "target": "Army special"
+        },
+        {
+            "source": "Vodka",
+            "target": "Arizona Twister"
+        },
+        {
+            "source": "Vodka",
+            "target": "501 Blue"
+        },
+        {
+            "source": "Vodka",
+            "target": "Brain Fart"
+        },
+        {
+            "source": "Vodka",
+            "target": "Cherry Electric Lemonade"
+        },
+        {
+            "source": "Vodka",
+            "target": "Dirty Martini"
+        },
+        {
+            "source": "Vodka",
+            "target": "Long Island Iced Tea"
+        },
+        {
+            "source": "Vodka",
+            "target": "Espresso Martini"
+        },
+        {
+            "source": "Vodka",
+            "target": "French Martini"
+        },
+        {
+            "source": "Vodka",
+            "target": "Russian Spring Punch"
+        },
+        {
+            "source": "Vodka",
+            "target": "Vesper"
+        },
+        {
+            "source": "Vodka",
+            "target": "Butter Baby"
+        },
+        {
+            "source": "Vodka",
+            "target": "Absolutely Fabulous"
+        },
+        {
+            "source": "Vodka",
+            "target": "Greyhound"
+        },
+        {
+            "source": "Creme de Cacao",
+            "target": "'57 Chevy with a White License Plate"
+        },
+        {
+            "source": "Dark rum",
+            "target": "155 Belmont"
+        },
+        {
+            "source": "Light rum",
+            "target": "155 Belmont"
+        },
+        {
+            "source": "Johnnie Walker",
+            "target": "3 Wise Men"
+        },
+        {
+            "source": "Jim Beam",
+            "target": "3 Wise Men"
+        },
+        {
+            "source": "Gin",
+            "target": "3-Mile Long Island Iced Tea"
+        },
+        {
+            "source": "Light rum",
+            "target": "3-Mile Long Island Iced Tea"
+        },
+        {
+            "source": "Tequila",
+            "target": "3-Mile Long Island Iced Tea"
+        },
+        {
+            "source": "Triple sec",
+            "target": "3-Mile Long Island Iced Tea"
+        },
+        {
+            "source": "Coca-Cola",
+            "target": "3-Mile Long Island Iced Tea"
+        },
+        {
+            "source": "Sweet and sour",
+            "target": "3-Mile Long Island Iced Tea"
+        },
+        {
+            "source": "Bitters",
+            "target": "3-Mile Long Island Iced Tea"
+        },
+        {
+            "source": "Lemon",
+            "target": "3-Mile Long Island Iced Tea"
+        },
+        {
+            "source": "Vanilla vodka",
+            "target": "50/50"
+        },
+        {
+            "source": "Grand Marnier",
+            "target": "50/50"
+        },
+        {
+            "source": "Blue Curacao",
+            "target": "501 Blue"
+        },
+        {
+            "source": "Blueberry schnapps",
+            "target": "501 Blue"
+        },
+        {
+            "source": "Sour mix",
+            "target": "501 Blue"
+        },
+        {
+            "source": "7-Up",
+            "target": "501 Blue"
+        },
+        {
+            "source": "Absolut Citron",
+            "target": "9 1/2 Weeks"
+        },
+        {
+            "source": "Orange Curacao",
+            "target": "9 1/2 Weeks"
+        },
+        {
+            "source": "Strawberry liqueur",
+            "target": "9 1/2 Weeks"
+        },
+        {
+            "source": "Coconut rum",
+            "target": "A Day at the Beach"
+        },
+        {
+            "source": "Amaretto",
+            "target": "A Day at the Beach"
+        },
+        {
+            "source": "Grenadine",
+            "target": "A Day at the Beach"
+        },
+        {
+            "source": "Peach schnapps",
+            "target": "A Gilligan's Island"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "A Gilligan's Island"
+        },
+        {
+            "source": "Light rum",
+            "target": "A Night In Old Mandalay"
+        },
+        {
+            "source": "Añejo rum",
+            "target": "A Night In Old Mandalay"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "A Night In Old Mandalay"
+        },
+        {
+            "source": "Lemon peel",
+            "target": "A Night In Old Mandalay"
+        },
+        {
+            "source": "Kirschwasser",
+            "target": "A midsummernight dream"
+        },
+        {
+            "source": "Strawberry liqueur",
+            "target": "A midsummernight dream"
+        },
+        {
+            "source": "Strawberries",
+            "target": "A midsummernight dream"
+        },
+        {
+            "source": "Schweppes Russchian",
+            "target": "A midsummernight dream"
+        },
+        {
+            "source": "White Creme de Menthe",
+            "target": "A.D.M. (After Dinner Mint)"
+        },
+        {
+            "source": "Southern Comfort",
+            "target": "A.D.M. (After Dinner Mint)"
+        },
+        {
+            "source": "Hot chocolate",
+            "target": "A.D.M. (After Dinner Mint)"
+        },
+        {
+            "source": "Dark rum",
+            "target": "Abilene"
+        },
+        {
+            "source": "Peach nectar",
+            "target": "Abilene"
+        },
+        {
+            "source": "Sugar",
+            "target": "Absinthe #2"
+        },
+        {
+            "source": "Anise",
+            "target": "Absinthe #2"
+        },
+        {
+            "source": "Licorice root",
+            "target": "Absinthe #2"
+        },
+        {
+            "source": "Wormwood",
+            "target": "Absinthe #2"
+        },
+        {
+            "source": "Absolut Vodka",
+            "target": "Absolutely Cranberry Smash"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Absolutely Cranberry Smash"
+        },
+        {
+            "source": "Ice",
+            "target": "Absolutely Cranberry Smash"
+        },
+        {
+            "source": "Cranberry Juice",
+            "target": "Absolutely Fabulous"
+        },
+        {
+            "source": "Champagne",
+            "target": "Absolutely Fabulous"
+        },
+        {
+            "source": "Absolut Citron",
+            "target": "Absolutly Screwed Up"
+        },
+        {
+            "source": "Triple sec",
+            "target": "Absolutly Screwed Up"
+        },
+        {
+            "source": "Tequila",
+            "target": "Adam Bomb"
+        },
+        {
+            "source": "Triple sec",
+            "target": "Adam Bomb"
+        },
+        {
+            "source": "Fruit",
+            "target": "Adam Bomb"
+        },
+        {
+            "source": "Ice",
+            "target": "Adam Bomb"
+        },
+        {
+            "source": "Salt",
+            "target": "Adam Bomb"
+        },
+        {
+            "source": "Fruit juice",
+            "target": "Adam Bomb"
+        },
+        {
+            "source": "Lemonade",
+            "target": "Adam Sunrise"
+        },
+        {
+            "source": "Water",
+            "target": "Adam Sunrise"
+        },
+        {
+            "source": "Sugar",
+            "target": "Adam Sunrise"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Addison Special"
+        },
+        {
+            "source": "Dry Vermouth",
+            "target": "Adios Amigos Cocktail"
+        },
+        {
+            "source": "Cognac",
+            "target": "Adios Amigos Cocktail"
+        },
+        {
+            "source": "Gin",
+            "target": "Adios Amigos Cocktail"
+        },
+        {
+            "source": "Fresh Lime Juice",
+            "target": "Adios Amigos Cocktail"
+        },
+        {
+            "source": "Sugar Syrup",
+            "target": "Adios Amigos Cocktail"
+        },
+        {
+            "source": "Water",
+            "target": "Adios Amigos Cocktail"
+        },
+        {
+            "source": "Strawberry schnapps",
+            "target": "Affair"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Affair"
+        },
+        {
+            "source": "Club soda",
+            "target": "Affair"
+        },
+        {
+            "source": "Creme de Banane",
+            "target": "After sex"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Afterglow"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Afterglow"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Alice Cocktail"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Alice Cocktail"
+        },
+        {
+            "source": "Cream",
+            "target": "Alice Cocktail"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Amaretto Stone Sour"
+        },
+        {
+            "source": "Sour mix",
+            "target": "Amaretto Stone Sour"
+        },
+        {
+            "source": "Sour mix",
+            "target": "Amaretto Stone Sour #3"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Amaretto Stone Sour #3"
+        },
+        {
+            "source": "Tequila",
+            "target": "Amaretto Stone Sour #3"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Amaretto Sunrise"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Amaretto Sunrise"
+        },
+        {
+            "source": "Angelica root",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Almond",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Allspice",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Cinnamon",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Anise",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Coriander",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Marjoram leaves",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Sugar",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Water",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Food coloring",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Food coloring",
+            "target": "Angelica Liqueur"
+        },
+        {
+            "source": "Grapefruit juice",
+            "target": "Apello"
+        },
+        {
+            "source": "Apple juice",
+            "target": "Apello"
+        },
+        {
+            "source": "Maraschino cherry",
+            "target": "Apello"
+        },
+        {
+            "source": "Apple cider",
+            "target": "Apple Cider Punch #1"
+        },
+        {
+            "source": "Brown sugar",
+            "target": "Apple Cider Punch #1"
+        },
+        {
+            "source": "Lemonade",
+            "target": "Apple Cider Punch #1"
+        },
+        {
+            "source": "Cloves",
+            "target": "Apple Cider Punch #1"
+        },
+        {
+            "source": "Allspice",
+            "target": "Apple Cider Punch #1"
+        },
+        {
+            "source": "Nutmeg",
+            "target": "Apple Cider Punch #1"
+        },
+        {
+            "source": "Cinnamon",
+            "target": "Apple Cider Punch #1"
+        },
+        {
+            "source": "Midori melon liqueur",
+            "target": "Applejack"
+        },
+        {
+            "source": "Sour mix",
+            "target": "Applejack"
+        },
+        {
+            "source": "Apricot brandy",
+            "target": "Apricot punch"
+        },
+        {
+            "source": "Champagne",
+            "target": "Apricot punch"
+        },
+        {
+            "source": "7-Up",
+            "target": "Apricot punch"
+        },
+        {
+            "source": "Grape soda",
+            "target": "Arctic Fish"
+        },
+        {
+            "source": "Ice",
+            "target": "Arctic Fish"
+        },
+        {
+            "source": "Candy",
+            "target": "Arctic Fish"
+        },
+        {
+            "source": "Midori melon liqueur",
+            "target": "Arizona Antifreeze"
+        },
+        {
+            "source": "Sweet and sour",
+            "target": "Arizona Antifreeze"
+        },
+        {
+            "source": "Malibu rum",
+            "target": "Arizona Twister"
+        },
+        {
+            "source": "Gold tequila",
+            "target": "Arizona Twister"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Arizona Twister"
+        },
+        {
+            "source": "Cream of coconut",
+            "target": "Arizona Twister"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Arizona Twister"
+        },
+        {
+            "source": "Ice",
+            "target": "Arizona Twister"
+        },
+        {
+            "source": "Pineapple",
+            "target": "Arizona Twister"
+        },
+        {
+            "source": "Gin",
+            "target": "Army special"
+        },
+        {
+            "source": "Lime juice cordial",
+            "target": "Army special"
+        },
+        {
+            "source": "Ice",
+            "target": "Army special"
+        },
+        {
+            "source": "Tea",
+            "target": "Artillery Punch"
+        },
+        {
+            "source": "Rye whiskey",
+            "target": "Artillery Punch"
+        },
+        {
+            "source": "Red wine",
+            "target": "Artillery Punch"
+        },
+        {
+            "source": "Brandy",
+            "target": "Artillery Punch"
+        },
+        {
+            "source": "Benedictine",
+            "target": "Artillery Punch"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "Artillery Punch"
+        },
+        {
+            "source": "Southern Comfort",
+            "target": "Atlantic Sun"
+        },
+        {
+            "source": "Passion fruit syrup",
+            "target": "Atlantic Sun"
+        },
+        {
+            "source": "Sweet and sour",
+            "target": "Atlantic Sun"
+        },
+        {
+            "source": "Club soda",
+            "target": "Atlantic Sun"
+        },
+        {
+            "source": "Lemonade",
+            "target": "Atomic Lokade"
+        },
+        {
+            "source": "Blue Curacao",
+            "target": "Atomic Lokade"
+        },
+        {
+            "source": "Triple sec",
+            "target": "Atomic Lokade"
+        },
+        {
+            "source": "Sugar",
+            "target": "Atomic Lokade"
+        },
+        {
+            "source": "Ice",
+            "target": "Atomic Lokade"
+        },
+        {
+            "source": "Lime juice",
+            "target": "Autodafé"
+        },
+        {
+            "source": "Soda water",
+            "target": "Autodafé"
+        },
+        {
+            "source": "Pisang Ambon",
+            "target": "Avalon"
+        },
+        {
+            "source": "Apple juice",
+            "target": "Avalon"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "Avalon"
+        },
+        {
+            "source": "Lemonade",
+            "target": "Avalon"
+        },
+        {
+            "source": "Lemonade",
+            "target": "Aztec Punch"
+        },
+        {
+            "source": "Dark Rum",
+            "target": "Bahama Mama"
+        },
+        {
+            "source": "Banana liqueur",
+            "target": "Bahama Mama"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Bahama Mama"
+        },
+        {
+            "source": "Pineapple Juice",
+            "target": "Bahama Mama"
+        },
+        {
+            "source": "Orange Juice",
+            "target": "Bahama Mama"
+        },
+        {
+            "source": "Sweet and Sour",
+            "target": "Bahama Mama"
+        },
+        {
+            "source": "Milk",
+            "target": "Banana Milk Shake"
+        },
+        {
+            "source": "Sugar syrup",
+            "target": "Banana Milk Shake"
+        },
+        {
+            "source": "Banana",
+            "target": "Banana Milk Shake"
+        },
+        {
+            "source": "Galliano",
+            "target": "Barracuda"
+        },
+        {
+            "source": "Pineapple Juice",
+            "target": "Barracuda"
+        },
+        {
+            "source": "Lime Juice",
+            "target": "Barracuda"
+        },
+        {
+            "source": "Prosecco",
+            "target": "Barracuda"
+        },
+        {
+            "source": "Coconut liqueur",
+            "target": "Belgian Blue"
+        },
+        {
+            "source": "Blue Curacao",
+            "target": "Belgian Blue"
+        },
+        {
+            "source": "Sprite",
+            "target": "Belgian Blue"
+        },
+        {
+            "source": "Ice",
+            "target": "Bellini Martini"
+        },
+        {
+            "source": "Peach nectar",
+            "target": "Bellini Martini"
+        },
+        {
+            "source": "Peach schnapps",
+            "target": "Bellini Martini"
+        },
+        {
+            "source": "Lemon peel",
+            "target": "Bellini Martini"
+        },
+        {
+            "source": "Everclear",
+            "target": "Berry Deadly"
+        },
+        {
+            "source": "Wine",
+            "target": "Berry Deadly"
+        },
+        {
+            "source": "Kool-Aid",
+            "target": "Berry Deadly"
+        },
+        {
+            "source": "Ice",
+            "target": "Black Forest Shake"
+        },
+        {
+            "source": "Chocolate syrup",
+            "target": "Black Forest Shake"
+        },
+        {
+            "source": "Cherry brandy",
+            "target": "Black Forest Shake"
+        },
+        {
+            "source": "Milk",
+            "target": "Black Forest Shake"
+        },
+        {
+            "source": "Coffee liqueur",
+            "target": "Black Russian"
+        },
+        {
+            "source": "Tomato juice",
+            "target": "Bloody Mary"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "Bloody Mary"
+        },
+        {
+            "source": "Worcestershire sauce",
+            "target": "Bloody Mary"
+        },
+        {
+            "source": "Tabasco sauce",
+            "target": "Bloody Mary"
+        },
+        {
+            "source": "Lime",
+            "target": "Bloody Mary"
+        },
+        {
+            "source": "Dark Rum",
+            "target": "Blue Hurricane"
+        },
+        {
+            "source": "Passoa",
+            "target": "Blue Hurricane"
+        },
+        {
+            "source": "Blue Curacao",
+            "target": "Blue Hurricane"
+        },
+        {
+            "source": "Sweet and Sour",
+            "target": "Blue Hurricane"
+        },
+        {
+            "source": "Ice",
+            "target": "Blue Hurricane"
+        },
+        {
+            "source": "Blue Curacao",
+            "target": "Blue Lagoon"
+        },
+        {
+            "source": "Lemonade",
+            "target": "Blue Lagoon"
+        },
+        {
+            "source": "Cherry",
+            "target": "Blue Lagoon"
+        },
+        {
+            "source": "Añejo rum",
+            "target": "Blue Mountain"
+        },
+        {
+            "source": "Tia maria",
+            "target": "Blue Mountain"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "Blue Mountain"
+        },
+        {
+            "source": "Everclear",
+            "target": "Brain Fart"
+        },
+        {
+            "source": "Mountain Dew",
+            "target": "Brain Fart"
+        },
+        {
+            "source": "Surge",
+            "target": "Brain Fart"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "Brain Fart"
+        },
+        {
+            "source": "Chambord raspberry liqueur",
+            "target": "Bruised Heart"
+        },
+        {
+            "source": "Peachtree schnapps",
+            "target": "Bruised Heart"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Bruised Heart"
+        },
+        {
+            "source": "Banana liqueur",
+            "target": "Bubble Gum"
+        },
+        {
+            "source": "Peach schnapps",
+            "target": "Bubble Gum"
+        },
+        {
+            "source": "Vanilla Ice-Cream",
+            "target": "Butter Baby"
+        },
+        {
+            "source": "Butterscotch schnapps",
+            "target": "Butter Baby"
+        },
+        {
+            "source": "Milk",
+            "target": "Butter Baby"
+        },
+        {
+            "source": "Orange",
+            "target": "Caribbean Orange Liqueur"
+        },
+        {
+            "source": "Sugar",
+            "target": "Caribbean Orange Liqueur"
+        },
+        {
+            "source": "Gin",
+            "target": "Cherry Electric Lemonade"
+        },
+        {
+            "source": "Tequila",
+            "target": "Cherry Electric Lemonade"
+        },
+        {
+            "source": "White rum",
+            "target": "Cherry Electric Lemonade"
+        },
+        {
+            "source": "Triple Sec",
+            "target": "Cherry Electric Lemonade"
+        },
+        {
+            "source": "Cherry Grenadine",
+            "target": "Cherry Electric Lemonade"
+        },
+        {
+            "source": "Sweet and sour",
+            "target": "Cherry Electric Lemonade"
+        },
+        {
+            "source": "Club soda",
+            "target": "Cherry Electric Lemonade"
+        },
+        {
+            "source": "Kahlua",
+            "target": "Chocolate Black Russian"
+        },
+        {
+            "source": "Chocolate ice-cream",
+            "target": "Chocolate Black Russian"
+        },
+        {
+            "source": "Coffee",
+            "target": "Coffee Liqueur"
+        },
+        {
+            "source": "Vanilla extract",
+            "target": "Coffee Liqueur"
+        },
+        {
+            "source": "Sugar",
+            "target": "Coffee Liqueur"
+        },
+        {
+            "source": "Water",
+            "target": "Coffee Liqueur"
+        },
+        {
+            "source": "Water",
+            "target": "Coffee-Vodka"
+        },
+        {
+            "source": "Sugar",
+            "target": "Coffee-Vodka"
+        },
+        {
+            "source": "Coffee",
+            "target": "Coffee-Vodka"
+        },
+        {
+            "source": "Vanilla",
+            "target": "Coffee-Vodka"
+        },
+        {
+            "source": "Caramel coloring",
+            "target": "Coffee-Vodka"
+        },
+        {
+            "source": "Cointreau",
+            "target": "Cosmopolitan Martini"
+        },
+        {
+            "source": "Lime",
+            "target": "Cosmopolitan Martini"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Cosmopolitan Martini"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Cranberry Punch"
+        },
+        {
+            "source": "Sugar",
+            "target": "Cranberry Punch"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Cranberry Punch"
+        },
+        {
+            "source": "Almond flavoring",
+            "target": "Cranberry Punch"
+        },
+        {
+            "source": "Spiced rum",
+            "target": "Cream Soda"
+        },
+        {
+            "source": "Cherry Heering",
+            "target": "Darkwood Sling"
+        },
+        {
+            "source": "Soda water",
+            "target": "Darkwood Sling"
+        },
+        {
+            "source": "Ice",
+            "target": "Darkwood Sling"
+        },
+        {
+            "source": "Dry Vermouth",
+            "target": "Dirty Martini"
+        },
+        {
+            "source": "Olive Brine",
+            "target": "Dirty Martini"
+        },
+        {
+            "source": "Lemon",
+            "target": "Dirty Martini"
+        },
+        {
+            "source": "Olive",
+            "target": "Dirty Martini"
+        },
+        {
+            "source": "Gin",
+            "target": "Dragonfly"
+        },
+        {
+            "source": "Lime",
+            "target": "Dragonfly"
+        },
+        {
+            "source": "Egg",
+            "target": "Egg Nog - Healthy"
+        },
+        {
+            "source": "Sugar",
+            "target": "Egg Nog - Healthy"
+        },
+        {
+            "source": "Condensed milk",
+            "target": "Egg Nog - Healthy"
+        },
+        {
+            "source": "Milk",
+            "target": "Egg Nog - Healthy"
+        },
+        {
+            "source": "Vanilla extract",
+            "target": "Egg Nog - Healthy"
+        },
+        {
+            "source": "Nutmeg",
+            "target": "Egg Nog - Healthy"
+        },
+        {
+            "source": "Kahlua",
+            "target": "Espresso Martini"
+        },
+        {
+            "source": "Sugar syrup",
+            "target": "Espresso Martini"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Flaming Dr. Pepper"
+        },
+        {
+            "source": "151 proof rum",
+            "target": "Flaming Dr. Pepper"
+        },
+        {
+            "source": "Dr. Pepper",
+            "target": "Flaming Dr. Pepper"
+        },
+        {
+            "source": "Beer",
+            "target": "Flaming Dr. Pepper"
+        },
+        {
+            "source": "Jägermeister",
+            "target": "Freddy Kruger"
+        },
+        {
+            "source": "Sambuca",
+            "target": "Freddy Kruger"
+        },
+        {
+            "source": "Raspberry Liqueur",
+            "target": "French Martini"
+        },
+        {
+            "source": "pineapple juice",
+            "target": "French Martini"
+        },
+        {
+            "source": "Yoghurt",
+            "target": "Fruit Shake"
+        },
+        {
+            "source": "Banana",
+            "target": "Fruit Shake"
+        },
+        {
+            "source": "Fruit",
+            "target": "Fruit Shake"
+        },
+        {
+            "source": "Ice",
+            "target": "Fruit Shake"
+        },
+        {
+            "source": "Galliano",
+            "target": "GG"
+        },
+        {
+            "source": "Ice",
+            "target": "GG"
+        },
+        {
+            "source": "Dark rum",
+            "target": "Gideon's Green Dinosaur"
+        },
+        {
+            "source": "Triple sec",
+            "target": "Gideon's Green Dinosaur"
+        },
+        {
+            "source": "Tequila",
+            "target": "Gideon's Green Dinosaur"
+        },
+        {
+            "source": "Melon liqueur",
+            "target": "Gideon's Green Dinosaur"
+        },
+        {
+            "source": "Mountain Dew",
+            "target": "Gideon's Green Dinosaur"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Godchild"
+        },
+        {
+            "source": "Heavy cream",
+            "target": "Godchild"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Godmother"
+        },
+        {
+            "source": "Grapefruit Juice",
+            "target": "Greyhound"
+        },
+        {
+            "source": "Spiced rum",
+            "target": "Happy Skipper"
+        },
+        {
+            "source": "Lime",
+            "target": "Happy Skipper"
+        },
+        {
+            "source": "Ice",
+            "target": "Happy Skipper"
+        },
+        {
+            "source": "Galliano",
+            "target": "Harvey Wallbanger"
+        },
+        {
+            "source": "Grapefruit Juice",
+            "target": "Hemingway Special"
+        },
+        {
+            "source": "Maraschino Liqueur",
+            "target": "Hemingway Special"
+        },
+        {
+            "source": "Lime Juice",
+            "target": "Hemingway Special"
+        },
+        {
+            "source": "Sugar",
+            "target": "Homemade Kahlua"
+        },
+        {
+            "source": "Corn syrup",
+            "target": "Homemade Kahlua"
+        },
+        {
+            "source": "Coffee",
+            "target": "Homemade Kahlua"
+        },
+        {
+            "source": "Vanilla extract",
+            "target": "Homemade Kahlua"
+        },
+        {
+            "source": "Water",
+            "target": "Homemade Kahlua"
+        },
+        {
+            "source": "Lemon peel",
+            "target": "Horse's Neck"
+        },
+        {
+            "source": "Brandy",
+            "target": "Horse's Neck"
+        },
+        {
+            "source": "Bitters",
+            "target": "Horse's Neck"
+        },
+        {
+            "source": "Iced tea",
+            "target": "Ice Pick #1"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "Ice Pick #1"
+        },
+        {
+            "source": "Lime",
+            "target": "Ipamena"
+        },
+        {
+            "source": "Brown sugar",
+            "target": "Ipamena"
+        },
+        {
+            "source": "Passion fruit juice",
+            "target": "Ipamena"
+        },
+        {
+            "source": "Ice",
+            "target": "Ipamena"
+        },
+        {
+            "source": "Bailey's irish cream",
+            "target": "Irish Curdling Cow"
+        },
+        {
+            "source": "Bourbon",
+            "target": "Irish Curdling Cow"
+        },
+        {
+            "source": "Kahlua",
+            "target": "Irish Russian"
+        },
+        {
+            "source": "Coca-Cola",
+            "target": "Irish Russian"
+        },
+        {
+            "source": "Guinness stout",
+            "target": "Irish Russian"
+        },
+        {
+            "source": "Irish whiskey",
+            "target": "Irish Spring"
+        },
+        {
+            "source": "Peach brandy",
+            "target": "Irish Spring"
+        },
+        {
+            "source": "Sweet and sour",
+            "target": "Irish Spring"
+        },
+        {
+            "source": "Orange",
+            "target": "Irish Spring"
+        },
+        {
+            "source": "Cherry",
+            "target": "Irish Spring"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Jackhammer"
+        },
+        {
+            "source": "Coffee",
+            "target": "Jamaican Coffee"
+        },
+        {
+            "source": "Water",
+            "target": "Jamaican Coffee"
+        },
+        {
+            "source": "Whipped cream",
+            "target": "Jamaican Coffee"
+        },
+        {
+            "source": "Jello",
+            "target": "Jello shots"
+        },
+        {
+            "source": "Water",
+            "target": "Jello shots"
+        },
+        {
+            "source": "Gin",
+            "target": "Jitterbug"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Jitterbug"
+        },
+        {
+            "source": "Lime juice",
+            "target": "Jitterbug"
+        },
+        {
+            "source": "Sugar",
+            "target": "Jitterbug"
+        },
+        {
+            "source": "Sugar syrup",
+            "target": "Jitterbug"
+        },
+        {
+            "source": "Soda water",
+            "target": "Jitterbug"
+        },
+        {
+            "source": "Triple sec",
+            "target": "Kamikaze"
+        },
+        {
+            "source": "Lime juice",
+            "target": "Kamikaze"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Kool-Aid Shot"
+        },
+        {
+            "source": "Sloe gin",
+            "target": "Kool-Aid Shot"
+        },
+        {
+            "source": "Triple sec",
+            "target": "Kool-Aid Shot"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Kool-Aid Shot"
+        },
+        {
+            "source": "Kool-Aid",
+            "target": "Kool-Aid Slammer"
+        },
+        {
+            "source": "Tequila",
+            "target": "Long Island Iced Tea"
+        },
+        {
+            "source": "Light rum",
+            "target": "Long Island Iced Tea"
+        },
+        {
+            "source": "Gin",
+            "target": "Long Island Iced Tea"
+        },
+        {
+            "source": "Coca-Cola",
+            "target": "Long Island Iced Tea"
+        },
+        {
+            "source": "Lemon peel",
+            "target": "Long Island Iced Tea"
+        },
+        {
+            "source": "Light rum",
+            "target": "Long Island Tea"
+        },
+        {
+            "source": "Gin",
+            "target": "Long Island Tea"
+        },
+        {
+            "source": "Tequila",
+            "target": "Long Island Tea"
+        },
+        {
+            "source": "Lemon",
+            "target": "Long Island Tea"
+        },
+        {
+            "source": "Coca-Cola",
+            "target": "Long Island Tea"
+        },
+        {
+            "source": "Lime",
+            "target": "Long vodka"
+        },
+        {
+            "source": "Angostura bitters",
+            "target": "Long vodka"
+        },
+        {
+            "source": "Tonic water",
+            "target": "Long vodka"
+        },
+        {
+            "source": "Ice",
+            "target": "Long vodka"
+        },
+        {
+            "source": "Beer",
+            "target": "Lunch Box"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Lunch Box"
+        },
+        {
+            "source": "Champagne",
+            "target": "Mimosa"
+        },
+        {
+            "source": "Gin",
+            "target": "Monkey Gland"
+        },
+        {
+            "source": "Benedictine",
+            "target": "Monkey Gland"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Monkey Gland"
+        },
+        {
+            "source": "Lime juice",
+            "target": "Moscow Mule"
+        },
+        {
+            "source": "Southern Comfort",
+            "target": "Mudslinger"
+        },
+        {
+            "source": "Pepsi Cola",
+            "target": "Mudslinger"
+        },
+        {
+            "source": "Gin",
+            "target": "National Aquarium"
+        },
+        {
+            "source": "Blue Curacao",
+            "target": "National Aquarium"
+        },
+        {
+            "source": "Sour mix",
+            "target": "National Aquarium"
+        },
+        {
+            "source": "Lemon-lime soda",
+            "target": "National Aquarium"
+        },
+        {
+            "source": "Triple sec",
+            "target": "Orange Crush"
+        },
+        {
+            "source": "Cherry brandy",
+            "target": "Orange Oasis"
+        },
+        {
+            "source": "Gin",
+            "target": "Orange Oasis"
+        },
+        {
+            "source": "Spiced rum",
+            "target": "Orange Push-up"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Orange Push-up"
+        },
+        {
+            "source": "Sour mix",
+            "target": "Orange Push-up"
+        },
+        {
+            "source": "Cream",
+            "target": "Orange Whip"
+        },
+        {
+            "source": "Ice",
+            "target": "Orange Whip"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "Orangeade"
+        },
+        {
+            "source": "Sugar syrup",
+            "target": "Orangeade"
+        },
+        {
+            "source": "Soda water",
+            "target": "Orangeade"
+        },
+        {
+            "source": "Kahlua",
+            "target": "Oreo Mudslide"
+        },
+        {
+            "source": "Bailey's irish cream",
+            "target": "Oreo Mudslide"
+        },
+        {
+            "source": "Vanilla ice-cream",
+            "target": "Oreo Mudslide"
+        },
+        {
+            "source": "Oreo cookie",
+            "target": "Oreo Mudslide"
+        },
+        {
+            "source": "Creme de Cacao",
+            "target": "Orgasm"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Orgasm"
+        },
+        {
+            "source": "Triple sec",
+            "target": "Orgasm"
+        },
+        {
+            "source": "Light cream",
+            "target": "Orgasm"
+        },
+        {
+            "source": "Sprite",
+            "target": "Pink Panty Pulldowns"
+        },
+        {
+            "source": "Pink lemonade",
+            "target": "Pink Panty Pulldowns"
+        },
+        {
+            "source": "Everclear",
+            "target": "Pink Penocha"
+        },
+        {
+            "source": "Peach schnapps",
+            "target": "Pink Penocha"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Pink Penocha"
+        },
+        {
+            "source": "Dark rum",
+            "target": "Planter's Punch"
+        },
+        {
+            "source": "Orgeat syrup",
+            "target": "Planter's Punch"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Planter's Punch"
+        },
+        {
+            "source": "Cherry liqueur",
+            "target": "Popped cherry"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Popped cherry"
+        },
+        {
+            "source": "Apple juice",
+            "target": "Pysch Vitamin Light"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Pysch Vitamin Light"
+        },
+        {
+            "source": "Ice",
+            "target": "Pysch Vitamin Light"
+        },
+        {
+            "source": "Black Sambuca",
+            "target": "Quick-sand"
+        },
+        {
+            "source": "Tequila",
+            "target": "Radioactive Long Island Iced Tea"
+        },
+        {
+            "source": "Gin",
+            "target": "Radioactive Long Island Iced Tea"
+        },
+        {
+            "source": "Triple sec",
+            "target": "Radioactive Long Island Iced Tea"
+        },
+        {
+            "source": "Chambord raspberry liqueur",
+            "target": "Radioactive Long Island Iced Tea"
+        },
+        {
+            "source": "Midori melon liqueur",
+            "target": "Radioactive Long Island Iced Tea"
+        },
+        {
+            "source": "Malibu rum",
+            "target": "Radioactive Long Island Iced Tea"
+        },
+        {
+            "source": "Sugar syrup",
+            "target": "Rail Splitter"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "Rail Splitter"
+        },
+        {
+            "source": "Lemon-lime soda",
+            "target": "Rum Cooler"
+        },
+        {
+            "source": "Lemon",
+            "target": "Rum Cooler"
+        },
+        {
+            "source": "Fruit punch",
+            "target": "Rum Punch"
+        },
+        {
+            "source": "Ice",
+            "target": "Rum Punch"
+        },
+        {
+            "source": "Malibu rum",
+            "target": "Rum Runner"
+        },
+        {
+            "source": "Blackberry brandy",
+            "target": "Rum Runner"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Rum Runner"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Rum Runner"
+        },
+        {
+            "source": "Light rum",
+            "target": "Rum Screwdriver"
+        },
+        {
+            "source": "Powdered sugar",
+            "target": "Rum Toddy"
+        },
+        {
+            "source": "Lemon peel",
+            "target": "Rum Toddy"
+        },
+        {
+            "source": "Water",
+            "target": "Rum Toddy"
+        },
+        {
+            "source": "Creme de Cassis",
+            "target": "Russian Spring Punch"
+        },
+        {
+            "source": "Sugar Syrup",
+            "target": "Russian Spring Punch"
+        },
+        {
+            "source": "Lemon Juice",
+            "target": "Russian Spring Punch"
+        },
+        {
+            "source": "Creme de Banane",
+            "target": "San Francisco"
+        },
+        {
+            "source": "Grenadine",
+            "target": "San Francisco"
+        },
+        {
+            "source": "Red wine",
+            "target": "Sangria #1"
+        },
+        {
+            "source": "Sugar",
+            "target": "Sangria #1"
+        },
+        {
+            "source": "Lemon juice",
+            "target": "Sangria #1"
+        },
+        {
+            "source": "Cloves",
+            "target": "Sangria #1"
+        },
+        {
+            "source": "Cinnamon",
+            "target": "Sangria #1"
+        },
+        {
+            "source": "Bailey's irish cream",
+            "target": "Screaming Orgasm"
+        },
+        {
+            "source": "Kahlua",
+            "target": "Screaming Orgasm"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Sea breeze"
+        },
+        {
+            "source": "Grapefruit juice",
+            "target": "Sea breeze"
+        },
+        {
+            "source": "Peach schnapps",
+            "target": "Sex on the Beach"
+        },
+        {
+            "source": "Cranberry juice",
+            "target": "Sex on the Beach"
+        },
+        {
+            "source": "Grapefruit juice",
+            "target": "Sex on the Beach"
+        },
+        {
+            "source": "Lemonade",
+            "target": "Shark Attack"
+        },
+        {
+            "source": "Water",
+            "target": "Shark Attack"
+        },
+        {
+            "source": "Jim Beam",
+            "target": "Shot-gun"
+        },
+        {
+            "source": "Wild Turkey",
+            "target": "Shot-gun"
+        },
+        {
+            "source": "Red wine",
+            "target": "Smut"
+        },
+        {
+            "source": "Peach schnapps",
+            "target": "Smut"
+        },
+        {
+            "source": "Pepsi Cola",
+            "target": "Smut"
+        },
+        {
+            "source": "151 proof rum",
+            "target": "Space Odyssey"
+        },
+        {
+            "source": "Malibu rum",
+            "target": "Space Odyssey"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Space Odyssey"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Space Odyssey"
+        },
+        {
+            "source": "Cherries",
+            "target": "Space Odyssey"
+        },
+        {
+            "source": "Peach nectar",
+            "target": "Spiced Peach Punch"
+        },
+        {
+            "source": "Brown sugar",
+            "target": "Spiced Peach Punch"
+        },
+        {
+            "source": "Cinnamon",
+            "target": "Spiced Peach Punch"
+        },
+        {
+            "source": "Cloves",
+            "target": "Spiced Peach Punch"
+        },
+        {
+            "source": "Lime juice",
+            "target": "Spiced Peach Punch"
+        },
+        {
+            "source": "Apricot brandy",
+            "target": "Stone Sour"
+        },
+        {
+            "source": "Sweet and sour",
+            "target": "Stone Sour"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Sunny Holiday Punch"
+        },
+        {
+            "source": "Club soda",
+            "target": "Sunny Holiday Punch"
+        },
+        {
+            "source": "Lemon",
+            "target": "Sunny Holiday Punch"
+        },
+        {
+            "source": "Berries",
+            "target": "Sunny Holiday Punch"
+        },
+        {
+            "source": "Champagne",
+            "target": "Sunny Holiday Punch"
+        },
+        {
+            "source": "Coffee",
+            "target": "Tennesee Mud"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Tennesee Mud"
+        },
+        {
+            "source": "Whipped cream",
+            "target": "Tennesee Mud"
+        },
+        {
+            "source": "Tequila",
+            "target": "Tequila Sunrise"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Tequila Sunrise"
+        },
+        {
+            "source": "Water",
+            "target": "Tia-Maria"
+        },
+        {
+            "source": "Brown sugar",
+            "target": "Tia-Maria"
+        },
+        {
+            "source": "Coffee",
+            "target": "Tia-Maria"
+        },
+        {
+            "source": "Vanilla extract",
+            "target": "Tia-Maria"
+        },
+        {
+            "source": "Gin",
+            "target": "Vesper"
+        },
+        {
+            "source": "Lillet Blanc",
+            "target": "Vesper"
+        },
+        {
+            "source": "Half-and-half",
+            "target": "Vodka Fizz"
+        },
+        {
+            "source": "Limeade",
+            "target": "Vodka Fizz"
+        },
+        {
+            "source": "Ice",
+            "target": "Vodka Fizz"
+        },
+        {
+            "source": "Nutmeg",
+            "target": "Vodka Fizz"
+        },
+        {
+            "source": "Red wine",
+            "target": "Wine Punch"
+        },
+        {
+            "source": "Lemon",
+            "target": "Wine Punch"
+        },
+        {
+            "source": "Orange",
+            "target": "Wine Punch"
+        },
+        {
+            "source": "Pineapple juice",
+            "target": "Wine Punch"
+        },
+        {
+            "source": "Chambord raspberry liqueur",
+            "target": "Zipperhead"
+        },
+        {
+            "source": "Soda water",
+            "target": "Zipperhead"
+        },
+        {
+            "source": "Amaretto",
+            "target": "Zippy's Revenge"
+        },
+        {
+            "source": "Kool-Aid",
+            "target": "Zippy's Revenge"
+        },
+        {
+            "source": "Gold rum",
+            "target": "Zombie"
+        },
+        {
+            "source": "151 proof rum",
+            "target": "Zombie"
+        },
+        {
+            "source": "Pernod",
+            "target": "Zombie"
+        },
+        {
+            "source": "Grenadine",
+            "target": "Zombie"
+        },
+        {
+            "source": "Lime Juice",
+            "target": "Zombie"
+        },
+        {
+            "source": "Angostura Bitters",
+            "target": "Zombie"
+        },
+        {
+            "source": "Ouzo",
+            "target": "Zorbatini"
+        }
+    ]
+
+  const simulation = d3.forceSimulation().nodes(nodesData);
+
+  const clusters = []
+
+  // node sim 
+  simulation
+    // .force('charge_force', d3.forceManyBody())
+    .force('charge_force', d3.forceManyBody()
+      .strength(d => Math.min(-20 * d.recipesCount, -200)))
+    // .force('cluster', d3.forceCluster()
+    //   .centers(function(d) {return clusters[d.category]}))
+    // .force('charge_force', d3.forceManyBody().strength( d => Math.min(-1 * d.recipesCount, -10)))
+    // .force("charge", d3.forceCollide(linksData))
+    .force("r", d3.forceRadial(getRadialForce, window.innerWidth / 2, window.innerHeight / 2)
+      .strength(getRadialForceStrength))
+    .force('center_force', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
+    .force('links', d3.forceLink(linksData).id(d => d.name).strength(0));
+
+  const graph = svg.append("g")
+    .attr("class", "graph");
+
+  const link = graph.append('g')
+    .attr('class', 'links')
+    .selectAll('line')
+    .data(linksData)
+    .enter()
+    .append('line')
+    .attr('stroke-width', 2);
+
+  const node = graph.append('g')
+    .attr('class', 'nodes')
+    .selectAll('circle').data(nodesData)
+    .enter()
+    .append('circle')
+    .attr('r', getNodeRadius)
+    .attr('fill', getNodeColor)
+    .on("mouseover", nodeMouseOver)
+    .on("mouseout", nodeMouseOut)
+    .on("click", nodeClick);
+
+  simulation.alphaTarget(0.2);
+  simulation.on('tick', simTick);
+
+  // User Input Handlers
+
+  const zoomHandler = d3.zoom()
+    .on("zoom", handleZoom);
+  zoomHandler(svg);
+
+  const dragHandler = d3.drag()
+    .on("start", dragStart)
+    .on("drag", dragDrag)
+    .on("end", dragEnd);
+  // dragHandler(node)
+
+  // Functions
+
+  function getRadialForceStrength(d) {
+    if (d.type === 'I') {
+      if (d.inShelf) {
+        return 0.1
+      } else {
+        return 0.1
+      }
+    } else {
+      return 0.1
+    }
+  };
+
+  function getRadialForce(d) {
+    if (d.type === 'I') {
+      if (d.inShelf) {
+        return 0;
+      } else {
+        return 300;
+      }
+    }
+    else {
+      return 200;
+    }
+  }
+
+  function getNodeRadius(d) {
+    return 10 + d.recipesCount * 0.75;
+  };
+
+  function getNodeColor(d) {
+    if (d.type === 'I') {
+      if (d.inShelf) {
+        return '#4389f9';
+      } else {
+        return '#94bcfc';
+      }
+    }
+    else {
+      switch (d.category) {
+        case "Ordinary Drink":
+          return "#ff7200";
+        case "Cocktail":
+          return "#ff1900";
+        case "Other/Unknown":
+          return "#d0ff00";
+        default:
+        return "#ff7200";
+          break;
+      }
+      if (d.category === 'Ordinary Drink') {
+
+      }
+      return '#f29437';
+    }
+  }
+
+  function simTick(){
+    node.attr('cx', d => d.x).attr('cy', d => d.y);
+    link
+      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+  };
+
+  function handleZoom() {
+    graph.attr("transform", d3.event.transform)
+  };
+
+  function nodeMouseOver(d) {
+    tooltip.transition()
+      .duration(200)
+      .style("opacity", .9);
+    tooltip.html(d.name)
+      .style("left", (d3.event.pageX) + "px")
+      .style("top", (d3.event.pageY - 28) + "px");
+  };
+
+  function nodeClick(d) {
+    // removeHighlights();
+    // highlight(d);
+    d3.selectAll('.links line')
+      .attr('class', link => {
+        if (link.source === d || link.target === d) {
+          return "highlight";
+        } else {
+          return "";
+        }
+      });
+  };
+
+  function removeHighlights() {
+    d3.selectAll('.nodes circle').attr('class', '');
+    d3.selectAll('.links line').attr('class', '');
+  }
+
+  function highlight(d) {
+    // d3.select(d).attr('class', 'highlight')
+    // console.log(d3.select(d))
+    // node.attr('class', "highLight");
+  }
+
+  function nodeMouseOut(d) {
+    tooltip.transition()
+      .duration(500)
+      .style("opacity", 0);
+  };
+
+  function dragStart(d) {
+    simulation.alphaTarget(1).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  };
+
+  function dragDrag(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  };
+
+  function dragEnd(d) {
+    simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+  };
+
+  // function forceCluster(alpha) {
+  //   for (var i = 0, n = nodes.length, node, cluster, k = alpha * 1; i < n; ++i) {
+  //     node = nodes[i];
+  //     cluster = clusters[node.cluster];
+  //     node.vx -= (node.x - cluster.x) * k;
+  //     node.vy -= (node.y - cluster.y) * k;
+  //   }
+  // }
+</script>
