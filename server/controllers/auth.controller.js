@@ -6,11 +6,14 @@ const User = mongoose.model('User');
 
 export const login = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
-    if (err) { return res.json({ err, info }); }
-    if (!user) { return res.json({ errors: info.message }); }
+    if (err) { return res.status(422).send(err); }
+    if (!user) { return res.status(422).json(info); }
+    // if (err) { return res.json({ err, info }); }
+    // if (!user) { return res.json({ errors: info.message }); }
 
     req.logIn(user, (err) => {
-      if (err) { return res.json({ err, info }); }
+      if (err) { return res.status(422).send(err); }
+      // if (err) { return res.json({ err, info }); }
       return res.json(user);
     });
   })(req, res, next);

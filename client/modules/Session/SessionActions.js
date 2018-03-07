@@ -11,7 +11,9 @@ export const logIn = user => dispatch => (
   callApi('login', 'post', user)
     .then(payloadWithUser => (
       dispatch(receiveCurrentUser(payloadWithUser))
-    ))
+    ), error => {
+      console.log(error);
+    })
 );
 
 export const signUp = newUser => dispatch => (
