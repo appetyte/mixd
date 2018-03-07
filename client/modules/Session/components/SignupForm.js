@@ -39,7 +39,10 @@ class SignupForm extends React.Component {
         className="session-form"
         onSubmit={this.handleSubmit}
       >
-        <Link to="/login">Log in instead</Link>
+        <div className="session-form-header">
+          <h1>Sign up</h1>
+        <Link to="/login">Log in instead?</Link>
+        </div>
         <label htmlFor="email">
           Email
           <input
@@ -76,10 +79,12 @@ class SignupForm extends React.Component {
             onChange={this.handleChange('confirmPassword')}
           />
         </label>
-        <button>
-          Create user
-        </button>
-        Sign up with google
+        <div className="session-form-bottom">
+          <button>
+            Sign up
+          </button>
+          <a className="session-form-button" href="/api/auth/google">Sign up with Google</a>
+      </div>
       </form>
     );
   }
