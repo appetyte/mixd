@@ -3,8 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import App from './App';
 import LoginForm from './modules/Session/components/LoginForm';
 import SignupForm from './modules/Session/components/SignupForm';
-// // import NotFoundPage from './pages/NotFoundPage';
-//
+
 export default [
   { component: App,
     routes: [
@@ -19,6 +18,3 @@ export default [
     ]
   }
 ];
-// export default (
-//     <Route path="/" component={TemporaryIndex} />
-// );

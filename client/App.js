@@ -7,7 +7,6 @@ import SignupForm from './modules/Session/components/SignupForm';
 
 const App = () => (
   <main>
-    Test string #1.
     <Switch>
       <Route exact path="/login" component={LoginForm} />
       <Route exact path="/signup" component={SignupForm} />
