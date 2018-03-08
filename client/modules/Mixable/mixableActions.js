@@ -32,4 +32,8 @@ export const fetchMixable = mixableId => dispatch => {
   });
 };
 
-export const fetchMixables = () => console.log("fetching mixables!");
+export const fetchMixables = shelf => disptach => {
+  return callApi(`mixables/from_shelf/?shelf=${shelf.join(',')}`, 'get').then(res => {
+    console.log(res);
+  });
+};
