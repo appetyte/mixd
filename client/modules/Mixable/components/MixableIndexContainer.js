@@ -8,7 +8,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchMixables: () => fetchMixables(),
+  fetchMixables: shelf => dispatch(fetchMixables(shelf)),
   openModal: () => dispatch(openModal()),
   showMixable: mixableId => dispatch(showMixable(mixableId))
 });
