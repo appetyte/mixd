@@ -5,7 +5,7 @@ import "./index.scss";
 
 class MixableIndex extends React.Component {
   componentDidMount() {
-    this.props.fetchMixables();
+    this.props.fetchMixables(["Vodka","Rum","Orange juice"]);
   }
 
   handleClick(mixableId) {
