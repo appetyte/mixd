@@ -1,11 +1,12 @@
 import React from "react";
 import Modal from "react-responsive-modal";
 import MixableShow from "./MixableShowContainer";
+import Graph from "../../Graph/components/GraphContainer";
 import "./index.scss";
 
 class MixableIndex extends React.Component {
   componentDidMount() {
-    this.props.fetchMixables(["Vodka","Rum","Orange juice"]);
+    // this.props.fetchMixables(["Vodka","Rum","Orange juice"]);
   }
 
   handleClick(mixableId) {
@@ -38,19 +39,7 @@ class MixableIndex extends React.Component {
     return (
       <section className="mixableIndex">
         <MixableShow />
-        <ul>
-          {Object.values(mixables).map(mixable => {
-            return (
-              <li
-                className="mixableIndex__item"
-                key={mixable._id}
-                onClick={this.handleClick(mixable._id)}
-              >
-                {mixable._id}
-              </li>
-            );
-          })}
-        </ul>
+        <Graph />
       </section>
     );
   }
