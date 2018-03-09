@@ -1,10 +1,11 @@
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { fetchMixables, showMixable, openModal } from "../mixableActions";
-import MixableIndex from "./MixableIndex";
+import { fetchMixables, showMixable, openModal } from "../../Mixable/mixableActions";
+import Graph from "./Graph.jsx";
 
 const mapStateToProps = state => ({
-  mixables: state.entities.mixables
+  nodes: state.entities.graphElements.nodes,
+  links: state.entities.graphElements.links
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -14,5 +15,5 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(MixableIndex)
+  connect(mapStateToProps, mapDispatchToProps)(Graph)
 );
