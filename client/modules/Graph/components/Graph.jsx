@@ -7,37 +7,46 @@ class Graph extends React.Component {
   constructor(props) {
     super(props);
     this.updateGraph = this.updateGraph.bind(this);
-    // this.setupGraph = this.setupGraph.bind(this);
+    this.pureReactUpdateGraph = this.pureReactUpdateGraph.bind(this);
     this.animate = this.animate.bind(this);
     this.state = {
       lol: true
     };
   }
 
-  componentDidMount() {
-    // this.setupGraph();
-    this.props.fetchMixables(["Vodka", "Rum", "Orange juice", "Sugar", "Ice", "Lime", "Lime juice", "Lemon juice", "Water", "Gin", "Light rum", "Triple sec"]);
-    // if(this.props.nodes.length > 0) this.updateGraph(this);
+  componentWillMount() {
+    // window.d3 = d3;
   }
 
-  // componentWillUpdate(nextProp) {
-  //   if(nextProp.nodes.length> 0) this.setupGraph(nextProp);
-  //   setInterval(this.animate, 10);
-  // }
+  componentDidMount() {
+    // this.pureReactUpdateGraph();
+    this.props.fetchMixables(["Vodka", "Rum", "Orange juice", "Sugar", "Ice", "Lime", "Lime juice", "Lemon juice", "Water", "Gin", "Light rum", "Triple sec"]);
+    if(this.props.nodes.length > 0) this.updateGraph(this);
+  }
+
+  componentWillUpdate(nextProp) {
+    // if(nextProp.nodes.length> 0) {
+    //   this.pureReactUpdateGraph(nextProp);
+    //   setTimeout(this.animate, 0);
+    // }
+  }
 
   animate() {
     this.simulation.tick();
-    this.setState({
-      lol: !this.state.lol
-    });
-    setInterval(this.animate, 10);
+    this.forceUpdate();
+    setTimeout(this.animate, 0);
+  }
+
+  shouldComponentUpdate() {
+    console.log("lol.");
+    return true;
   }
 
   componentDidUpdate() {
     if(this.props.nodes.length > 0) this.updateGraph(this);
   }
 
-  setupGraph(props) {
+  pureReactUpdateGraph(props) {
     this.svg = d3.select('.graph__svg');
     this.tooltip = d3.select('.graph__tooltip');
 
