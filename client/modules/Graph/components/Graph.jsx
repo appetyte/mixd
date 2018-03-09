@@ -16,7 +16,7 @@ class Graph extends React.Component {
 
   componentDidMount() {
     // this.setupGraph();
-    this.props.fetchMixables(["Vodka", "Rum", "Orange juice"]);
+    this.props.fetchMixables(["Vodka", "Rum", "Orange juice", "Sugar", "Ice", "Lime", "Lime juice", "Lemon juice", "Water", "Gin", "Light rum", "Triple sec"]);
     // if(this.props.nodes.length > 0) this.updateGraph(this);
   }
 
@@ -199,7 +199,7 @@ class Graph extends React.Component {
     }
 
     function nodeClick(d) {
-      d3.selectAll('.links line').attr('class', link => {
+      d3.selectAll('.graph__svg__elements__links line').attr('class', link => {
         if (link.source === d || link.target === d) {
           return "highlight";
         } else {
