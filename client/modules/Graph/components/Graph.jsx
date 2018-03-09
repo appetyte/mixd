@@ -1,7 +1,7 @@
-import React from "react";
-import Modal from "react-responsive-modal";
-import * as d3 from "d3";
-import "./graph.scss";
+import React from 'react';
+import Modal from 'react-responsive-modal';
+import * as d3 from 'd3';
+import './graph.scss';
 
 class Graph extends React.Component {
   constructor(props) {
@@ -20,8 +20,21 @@ class Graph extends React.Component {
 
   componentDidMount() {
     // this.pureReactUpdateGraph();
-    this.props.fetchMixables(["Vodka", "Rum", "Orange juice", "Sugar", "Ice", "Lime", "Lime juice", "Lemon juice", "Water", "Gin", "Light rum", "Triple sec"]);
-    if(this.props.nodes.length > 0) this.updateGraph(this);
+    this.props.fetchMixables([
+      'Vodka',
+      'Rum',
+      'Orange juice',
+      'Sugar',
+      'Ice',
+      'Lime',
+      'Lime juice',
+      'Lemon juice',
+      'Water',
+      'Gin',
+      'Light rum',
+      'Triple sec'
+    ]);
+    if (this.props.nodes.length > 0) this.updateGraph(this);
   }
 
   componentWillUpdate(nextProp) {
@@ -38,12 +51,11 @@ class Graph extends React.Component {
   }
 
   shouldComponentUpdate() {
-    console.log("lol.");
     return true;
   }
 
   componentDidUpdate() {
-    if(this.props.nodes.length > 0) this.updateGraph(this);
+    if (this.props.nodes.length > 0) this.updateGraph(this);
   }
 
   pureReactUpdateGraph(props) {
@@ -53,17 +65,37 @@ class Graph extends React.Component {
     this.simulation = d3.forceSimulation().nodes(props.nodes);
 
     this.simulation
-      .force('charge_force', d3.forceManyBody().strength(d => Math.min(-20 * d.recipesCount, -200)))
-      .force("r", d3.forceRadial(getRadialForce, window.innerWidth / 2, window.innerHeight / 2)
-        .strength(getRadialForceStrength))
-      .force('center_force', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
-      .force('links', d3.forceLink(props.links).id(d => d.name).strength(0));
+      .force(
+        'charge_force',
+        d3.forceManyBody().strength(d => Math.min(-20 * d.recipesCount, -200))
+      )
+      .force(
+        'r',
+        d3
+          .forceRadial(
+            getRadialForce,
+            window.innerWidth / 2,
+            window.innerHeight / 2
+          )
+          .strength(getRadialForceStrength)
+      )
+      .force(
+        'center_force',
+        d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2)
+      )
+      .force(
+        'links',
+        d3
+          .forceLink(props.links)
+          .id(d => d.name)
+          .strength(0)
+      );
 
     // for (let i = 0; i < 2000; i++ ){
     //   this.simulation.tick();
     // }
 
-    this.elements = d3.select(".graph__svg__elements");
+    this.elements = d3.select('.graph__svg__elements');
 
     // Functions
 
@@ -101,45 +133,67 @@ class Graph extends React.Component {
     const simulation = d3.forceSimulation().nodes(nodesData);
 
     simulation
-      .force('charge_force', d3.forceManyBody()
-        .strength(getChargeForceStrength))
-      .force("r", d3.forceRadial(getRadialForce, window.innerWidth / 2, window.innerHeight / 2)
-        .strength(getRadialForceStrength))
-        .force('center_force', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
-        .force('links', d3.forceLink(linksData).id(d => d.name).strength(0));
+      .force(
+        'charge_force',
+        d3.forceManyBody().strength(getChargeForceStrength)
+      )
+      .force(
+        'r',
+        d3
+          .forceRadial(
+            getRadialForce,
+            window.innerWidth / 2,
+            window.innerHeight / 2
+          )
+          .strength(getRadialForceStrength)
+      )
+      .force(
+        'center_force',
+        d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2)
+      )
+      .force(
+        'links',
+        d3
+          .forceLink(linksData)
+          .id(d => d.name)
+          .strength(0)
+      );
 
     const graph = d3.select('.graph__svg__elements');
 
-    const link = d3.select('.graph__svg__elements__links')
+    const link = d3
+      .select('.graph__svg__elements__links')
       .selectAll('line')
       .data(linksData)
       .enter()
       .append('line')
       .attr('stroke-width', 2);
 
-    const node = d3.select('.graph__svg__elements__nodes')
+    const node = d3
+      .select('.graph__svg__elements__nodes')
       .selectAll('circle')
       .data(nodesData)
       .enter()
       .append('circle')
       .attr('r', getNodeRadius)
       .attr('fill', getNodeColor)
-      .on("mouseover", nodeMouseOver)
-      .on("mouseout", nodeMouseOut)
-      .on("click", nodeClick);
+      .on('mouseover', nodeMouseOver)
+      .on('mouseout', nodeMouseOut)
+      .on('click', nodeClick);
 
     // simulation.alphaTarget(0.2);
     simulation.on('tick', simTick);
 
     // User Input Handlers
 
-    const zoomHandler = d3.zoom().on("zoom", handleZoom);
+    const zoomHandler = d3.zoom().on('zoom', handleZoom);
     zoomHandler(svg);
 
-    const dragHandler = d3.drag()
-      .on("start", dragStart)
-      .on("drag", dragDrag)
-      .on("end", dragEnd);
+    const dragHandler = d3
+      .drag()
+      .on('start', dragStart)
+      .on('drag', dragDrag)
+      .on('end', dragEnd);
     // dragHandler(node)
 
     // Functions
@@ -185,30 +239,40 @@ class Graph extends React.Component {
         }
       } else {
         switch (d.category) {
-          case "Ordinary Drink":
-            return "#ff7200";
-          case "Cocktail":
-            return "#ff1900";
-          case "Other/Unknown":
-            return "#d0ff00";
+          case 'Ordinary Drink':
+            return '#ff7200';
+          case 'Cocktail':
+            return '#ff1900';
+          case 'Other/Unknown':
+            return '#d0ff00';
           default:
-            return "#ff7200";
+            return '#ff7200';
         }
       }
     }
 
     function simTick() {
       node.attr('cx', d => d.x).attr('cy', d => d.y);
-      link.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+      link
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y);
     }
 
     function handleZoom() {
-      graph.attr("transform", d3.event.transform);
+      graph.attr('transform', d3.event.transform);
     }
 
     function nodeMouseOver(d) {
-      tooltip.transition().duration(200).style("opacity", .9);
-      tooltip.html(d.name).style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+      tooltip
+        .transition()
+        .duration(200)
+        .style('opacity', 0.9);
+      tooltip
+        .html(d.name)
+        .style('left', d3.event.pageX + 'px')
+        .style('top', d3.event.pageY - 28 + 'px');
     }
 
     function nodeClick(d) {
@@ -227,7 +291,7 @@ class Graph extends React.Component {
       d3.selectAll('circle').attr('class', node => {
         if (highlightedNodes.has(node)) return 'highlight';
       });
-      if (d.type === "R" || d.type === "RI") {
+      if (d.type === 'R' || d.type === 'RI') {
         component.props.openModal();
         component.props.showMixable(d.name);
       }
@@ -250,7 +314,10 @@ class Graph extends React.Component {
     }
 
     function nodeMouseOut(d) {
-      tooltip.transition().duration(500).style("opacity", 0);
+      tooltip
+        .transition()
+        .duration(500)
+        .style('opacity', 0);
     }
 
     function dragStart(d) {
@@ -271,7 +338,6 @@ class Graph extends React.Component {
     }
   }
 
-
   getNodeRadius(node) {
     return 10 + node.recipesCount * 0.75;
   }
@@ -285,29 +351,30 @@ class Graph extends React.Component {
       }
     } else {
       switch (node.category) {
-        case "Ordinary Drink":
-          return "#ff7200";
-        case "Cocktail":
-          return "#ff1900";
-        case "Other/Unknown":
-          return "#d0ff00";
+        case 'Ordinary Drink':
+          return '#ff7200';
+        case 'Cocktail':
+          return '#ff1900';
+        case 'Other/Unknown':
+          return '#d0ff00';
         default:
-          return "#ff7200";
+          return '#ff7200';
       }
     }
   }
 
-
   render() {
-    return (<section className="graph">
-      <div className="graph__tooltip"></div>
-      <svg className="graph__svg">
-        <g className="graph__svg__elements">
-          <g className="graph__svg__elements__links"></g>
-          <g className="graph__svg__elements__nodes"></g>
-        </g>
-      </svg>
-    </section>);
+    return (
+      <section className="graph">
+        <div className="graph__tooltip" />
+        <svg className="graph__svg">
+          <g className="graph__svg__elements">
+            <g className="graph__svg__elements__links" />
+            <g className="graph__svg__elements__nodes" />
+          </g>
+        </svg>
+      </section>
+    );
 
     // return (<section className="graph">
     //   <div className="graph__tooltip"></div>
