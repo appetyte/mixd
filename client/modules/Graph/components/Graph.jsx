@@ -21,7 +21,7 @@ class Graph extends React.Component {
   }
 
   // componentWillUpdate(nextProp) {
-  //   if(nextProp.nodes.length> 0) this.setupGraph(nextProp);
+  //   if(nextProp.nodes.length> 0) this.pureReactUpdateGraph(nextProp);
   //   setInterval(this.animate, 10);
   // }
 
@@ -37,7 +37,7 @@ class Graph extends React.Component {
     if(this.props.nodes.length > 0) this.updateGraph(this);
   }
 
-  setupGraph(props) {
+  pureReactUpdateGraph(props) {
     this.svg = d3.select('.graph__svg');
     this.tooltip = d3.select('.graph__tooltip');
 
@@ -93,7 +93,7 @@ class Graph extends React.Component {
 
     simulation
       .force('charge_force', d3.forceManyBody()
-        .strength(d => Math.min(-20 * d.recipesCount, -200)))
+        .strength(getChargeForceStrength))
       .force("r", d3.forceRadial(getRadialForce, window.innerWidth / 2, window.innerHeight / 2)
         .strength(getRadialForceStrength))
         .force('center_force', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
@@ -135,6 +135,10 @@ class Graph extends React.Component {
 
     // Functions
 
+    function getChargeForceStrength(d) {
+      return Math.min(-5 * d.recipesCount, -50);
+    }
+
     function getRadialForceStrength(d) {
       if (d.type === 'I') {
         if (d.inShelf) {
@@ -152,15 +156,15 @@ class Graph extends React.Component {
         if (d.inShelf) {
           return 0;
         } else {
-          return 300;
+          return 200;
         }
       } else {
-        return 200;
+        return 100;
       }
     }
 
     function getNodeRadius(d) {
-      return 10 + d.recipesCount * 0.75;
+      return 5 + d.recipesCount * 0.5;
     }
 
     function getNodeColor(d) {
@@ -199,17 +203,30 @@ class Graph extends React.Component {
     }
 
     function nodeClick(d) {
-      d3.selectAll('.graph__svg__elements__links line').attr('class', link => {
-        if (link.source === d || link.target === d) {
-          return "highlight";
-        } else {
-          return "";
+      clearHighlights();
+      const highlightedNodes = new Set([d]);
+      // d3.select(this).attr('class', 'highlight');
+      d3.selectAll('line').attr('class', link => {
+        if (link.source === d) {
+          highlightedNodes.add(link.target);
+          return 'highlight';
+        } else if (link.target === d) {
+          highlightedNodes.add(link.source);
+          return 'highlight';
         }
+      });
+      d3.selectAll('circle').attr('class', node => {
+        if (highlightedNodes.has(node)) return 'highlight';
       });
       if (d.type === "R" || d.type === "RI") {
         component.props.openModal();
         component.props.showMixable(d.name);
       }
+    }
+
+    function clearHighlights() {
+      d3.selectAll('.graph__svg__elements__nodes circle').attr('class', '');
+      d3.selectAll('.graph__svg__elements__links line').attr('class', '');
     }
 
     function removeHighlights() {
@@ -270,7 +287,6 @@ class Graph extends React.Component {
       }
     }
   }
-
 
   render() {
     return (<section className="graph">
