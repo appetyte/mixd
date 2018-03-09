@@ -7,7 +7,7 @@ class Graph extends React.Component {
   constructor(props) {
     super(props);
     this.updateGraph = this.updateGraph.bind(this);
-    this.setupGraph = this.setupGraph.bind(this);
+    // this.setupGraph = this.setupGraph.bind(this);
     this.animate = this.animate.bind(this);
     this.state = {
       lol: true
@@ -21,7 +21,7 @@ class Graph extends React.Component {
   }
 
   // componentWillUpdate(nextProp) {
-  //   if(nextProp.nodes.length> 0) this.pureReactUpdateGraph(nextProp);
+  //   if(nextProp.nodes.length> 0) this.setupGraph(nextProp);
   //   setInterval(this.animate, 10);
   // }
 
@@ -37,7 +37,7 @@ class Graph extends React.Component {
     if(this.props.nodes.length > 0) this.updateGraph(this);
   }
 
-  pureReactUpdateGraph(props) {
+  setupGraph(props) {
     this.svg = d3.select('.graph__svg');
     this.tooltip = d3.select('.graph__tooltip');
 
@@ -287,6 +287,7 @@ class Graph extends React.Component {
       }
     }
   }
+
 
   render() {
     return (<section className="graph">
