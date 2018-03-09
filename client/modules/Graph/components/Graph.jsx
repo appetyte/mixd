@@ -6,139 +6,85 @@ import "./graph.scss";
 class Graph extends React.Component {
   constructor(props) {
     super(props);
-    this.updateGraph.bind(this);
+    this.updateGraph = this.updateGraph.bind(this);
+    this.setupGraph = this.setupGraph.bind(this);
+    this.animate = this.animate.bind(this);
+    this.state = {
+      lol: true
+    };
   }
+
   componentDidMount() {
-    this.props.fetchMixables(["Vodka","Rum","Orange juice"]);
-    if(this.props.nodes.length > 0) this.updateGraph(this);
+    // this.setupGraph();
+    this.props.fetchMixables(["Vodka", "Rum", "Orange juice"]);
+    // if(this.props.nodes.length > 0) this.updateGraph(this);
+  }
+
+  // componentWillUpdate(nextProp) {
+  //   if(nextProp.nodes.length> 0) this.setupGraph(nextProp);
+  //   setInterval(this.animate, 10);
+  // }
+
+  animate() {
+    this.simulation.tick();
+    this.setState({
+      lol: !this.state.lol
+    });
+    setInterval(this.animate, 10);
   }
 
   componentDidUpdate() {
     if(this.props.nodes.length > 0) this.updateGraph(this);
   }
 
-  getRadialForceStrength(d) {
-    if (d.type === 'I') {
-      if (d.inShelf) {
-        return 0.1;
-      } else {
-        return 0.1;
-      }
-    } else {
-      return 0.1;
-    }
-  }
+  setupGraph(props) {
+    this.svg = d3.select('.graph__svg');
+    this.tooltip = d3.select('.graph__tooltip');
 
-  getRadialForce(d) {
-    if (d.type === 'I') {
-      if (d.inShelf) {
-        return 0;
-      } else {
-        return 300;
-      }
-    }
-    else {
-      return 200;
-    }
-  }
+    this.simulation = d3.forceSimulation().nodes(props.nodes);
 
-  getNodeRadius(d) {
-    return 10 + d.recipesCount * 0.75;
-  }
+    this.simulation
+      .force('charge_force', d3.forceManyBody().strength(d => Math.min(-20 * d.recipesCount, -200)))
+      .force("r", d3.forceRadial(getRadialForce, window.innerWidth / 2, window.innerHeight / 2)
+        .strength(getRadialForceStrength))
+      .force('center_force', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
+      .force('links', d3.forceLink(props.links).id(d => d.name).strength(0));
 
-  getNodeColor(d) {
-    if (d.type === 'I') {
-      if (d.inShelf) {
-        return '#4389f9';
-      } else {
-        return '#94bcfc';
-      }
-    }
-    else {
-      switch (d.category) {
-        case "Ordinary Drink":
-          return "#ff7200";
-        case "Cocktail":
-          return "#ff1900";
-        case "Other/Unknown":
-          return "#d0ff00";
-        default:
-          return "#ff7200";
-      }
-    }
-  }
+    // for (let i = 0; i < 2000; i++ ){
+    //   this.simulation.tick();
+    // }
 
-  simTick(){
-    node.attr('cx', d => d.x).attr('cy', d => d.y);
-    link
-      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-  }
+    this.elements = d3.select(".graph__svg__elements");
 
-  handleZoom() {
-    graph.attr("transform", d3.event.transform);
-  }
+    // Functions
 
-  nodeMouseOver(d) {
-    tooltip.transition()
-      .duration(200)
-      .style("opacity", .9);
-    tooltip.html(d.name)
-      .style("left", (d3.event.pageX) + "px")
-      .style("top", (d3.event.pageY - 28) + "px");
-  }
-
-  nodeClick(d) {
-    d3.selectAll('.links line')
-      .attr('class', link => {
-        if (link.source === d || link.target === d) {
-          return "highlight";
+    function getRadialForceStrength(d) {
+      if (d.type === 'I') {
+        if (d.inShelf) {
+          return 0.1;
         } else {
-          return "";
+          return 0.1;
         }
-      });
-    if (d.type === "R" || d.type === "RI") {
-      component.props.openModal();
-      component.props.showMixable(d.name);
+      } else {
+        return 0.1;
+      }
     }
-  }
 
-  removeHighlights() {
-    d3.selectAll('.nodes circle').attr('class', '');
-    d3.selectAll('.links line').attr('class', '');
-  }
-
-  highlight(d) {
-    // d3.select(d).attr('class', 'highlight')
-    // console.log(d3.select(d))
-    // node.attr('class', "highLight");
-  }
-
-  nodeMouseOut(d) {
-    tooltip.transition()
-      .duration(500)
-      .style("opacity", 0);
-  }
-
-  dragStart(d) {
-    simulation.alphaTarget(1).restart();
-    d.fx = d.x;
-    d.fy = d.y;
-  }
-
-  dragDrag(d) {
-    d.fx = d3.event.x;
-    d.fy = d3.event.y;
-  }
-
-  dragEnd(d) {
-    simulation.alphaTarget(0);
-    d.fx = null;
-    d.fy = null;
+    function getRadialForce(d) {
+      if (d.type === 'I') {
+        if (d.inShelf) {
+          return 0;
+        } else {
+          return 300;
+        }
+      } else {
+        return 200;
+      }
+    }
   }
 
   updateGraph(component) {
-    const svg = d3.select('svg');
+    const svg = d3.select('.graph__svg');
     const tooltip = d3.select('.graph__tooltip');
     const nodesData = this.props.nodes;
     const linksData = this.props.links;
@@ -150,23 +96,21 @@ class Graph extends React.Component {
         .strength(d => Math.min(-20 * d.recipesCount, -200)))
       .force("r", d3.forceRadial(getRadialForce, window.innerWidth / 2, window.innerHeight / 2)
         .strength(getRadialForceStrength))
-      .force('center_force', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
-      .force('links', d3.forceLink(linksData).id(d => d.name).strength(0));
+        .force('center_force', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
+        .force('links', d3.forceLink(linksData).id(d => d.name).strength(0));
 
-    const graph = svg.append("g")
-      .attr("class", "graph");
+    const graph = d3.select('.graph__svg__elements');
 
-    const link = graph.append('g')
-      .attr('class', 'links')
+    const link = d3.select('.graph__svg__elements__links')
       .selectAll('line')
       .data(linksData)
       .enter()
       .append('line')
       .attr('stroke-width', 2);
 
-    const node = graph.append('g')
-      .attr('class', 'nodes')
-      .selectAll('circle').data(nodesData)
+    const node = d3.select('.graph__svg__elements__nodes')
+      .selectAll('circle')
+      .data(nodesData)
       .enter()
       .append('circle')
       .attr('r', getNodeRadius)
@@ -180,8 +124,7 @@ class Graph extends React.Component {
 
     // User Input Handlers
 
-    const zoomHandler = d3.zoom()
-      .on("zoom", handleZoom);
+    const zoomHandler = d3.zoom().on("zoom", handleZoom);
     zoomHandler(svg);
 
     const dragHandler = d3.drag()
@@ -211,8 +154,7 @@ class Graph extends React.Component {
         } else {
           return 300;
         }
-      }
-      else {
+      } else {
         return 200;
       }
     }
@@ -228,8 +170,7 @@ class Graph extends React.Component {
         } else {
           return '#94bcfc';
         }
-      }
-      else {
+      } else {
         switch (d.category) {
           case "Ordinary Drink":
             return "#ff7200";
@@ -243,11 +184,9 @@ class Graph extends React.Component {
       }
     }
 
-    function simTick(){
+    function simTick() {
       node.attr('cx', d => d.x).attr('cy', d => d.y);
-      link
-        .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-        .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+      link.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y);
     }
 
     function handleZoom() {
@@ -255,23 +194,18 @@ class Graph extends React.Component {
     }
 
     function nodeMouseOver(d) {
-      tooltip.transition()
-        .duration(200)
-        .style("opacity", .9);
-      tooltip.html(d.name)
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY - 28) + "px");
+      tooltip.transition().duration(200).style("opacity", .9);
+      tooltip.html(d.name).style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
     }
 
     function nodeClick(d) {
-      d3.selectAll('.links line')
-        .attr('class', link => {
-          if (link.source === d || link.target === d) {
-            return "highlight";
-          } else {
-            return "";
-          }
-        });
+      d3.selectAll('.links line').attr('class', link => {
+        if (link.source === d || link.target === d) {
+          return "highlight";
+        } else {
+          return "";
+        }
+      });
       if (d.type === "R" || d.type === "RI") {
         component.props.openModal();
         component.props.showMixable(d.name);
@@ -290,9 +224,7 @@ class Graph extends React.Component {
     }
 
     function nodeMouseOut(d) {
-      tooltip.transition()
-        .duration(500)
-        .style("opacity", 0);
+      tooltip.transition().duration(500).style("opacity", 0);
     }
 
     function dragStart(d) {
@@ -313,21 +245,62 @@ class Graph extends React.Component {
     }
   }
 
-  handleClick(mixableId) {
-    return e => {
-      this.props.openModal();
-      this.props.showMixable(mixableId);
-    };
+
+  getNodeRadius(node) {
+    return 10 + node.recipesCount * 0.75;
   }
 
-  render() {
+  getNodeColor(node) {
+    if (node.type === 'I') {
+      if (node.inShelf) {
+        return '#4389f9';
+      } else {
+        return '#94bcfc';
+      }
+    } else {
+      switch (node.category) {
+        case "Ordinary Drink":
+          return "#ff7200";
+        case "Cocktail":
+          return "#ff1900";
+        case "Other/Unknown":
+          return "#d0ff00";
+        default:
+          return "#ff7200";
+      }
+    }
+  }
 
-    return (
-      <section className="graph">
-        <div className="graph__tooltip"></div>
-        <svg className="graph__svg"></svg>
-      </section>
-    );
+
+  render() {
+    return (<section className="graph">
+      <div className="graph__tooltip"></div>
+      <svg className="graph__svg">
+        <g className="graph__svg__elements">
+          <g className="graph__svg__elements__links"></g>
+          <g className="graph__svg__elements__nodes"></g>
+        </g>
+      </svg>
+    </section>);
+
+    // return (<section className="graph">
+    //   <div className="graph__tooltip"></div>
+    //   <svg className="graph__svg">
+    //     <g className="graph__svg__elements">
+    //       <g className="graph__svg__elements__nodes">
+    //         {this.props.nodes.map(node => <circle
+    //           key={node.name}
+    //           strokeWidth="2"
+    //           r={this.getNodeRadius(node)}
+    //           fill={this.getNodeColor(node)}
+    //           cx={node.x}
+    //           cy={node.y}
+    //           ></circle>)}
+    //       </g>
+    //       <g className="graph__svg__elements__lines"></g>
+    //     </g>
+    //   </svg>
+    // </section>);
   }
 }
 
