@@ -31,7 +31,7 @@ export const showMixable = mixableId => ({
 });
 
 export const fetchMixable = mixableId => dispatch => {
-  return callApi(`mixables/${mixableId}`, "get").then(mixable => {
+  return callApi(`mixables/${escape(mixableId)}`, "get").then(mixable => {
     mixable[0].imgUrl = parse(mixable[0].imgUrl);
     dispatch(receiveMixable(mixable[0]));
     return mixable;
@@ -39,7 +39,7 @@ export const fetchMixable = mixableId => dispatch => {
 };
 
 export const fetchMixables = shelf => dispatch => {
-  return callApi(`mixables/from_shelf/?shelf=${shelf.join(',')}`, 'get').then(payload => {
+  return callApi(`mixables/from_shelf/?shelf=${escape(shelf.join(','))}`, 'get').then(payload => {
     dispatch(receiveMixables(payload));
     return payload;
   });
