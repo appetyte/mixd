@@ -36,11 +36,11 @@ class LoginForm extends React.Component {
   render() {
     return (
       <form
-        className="session-form"
+        className="loginForm"
         onSubmit={this.handleSubmit}
       >
-        <div className="session-form-header">
-          <h1>Log in</h1>
+        <div className="loginForm__header">
+          <h1 className="loginForm__title">Log in</h1>
           <Link to="/signup">Create account instead?</Link>
         </div>
         <label htmlFor="email">
@@ -62,11 +62,15 @@ class LoginForm extends React.Component {
             placeholder="Password"
           />
         </label>
-        <div className="session-form-bottom">
+        <div className="loginForm__session-buttons">
           <button>
             Log in
           </button>
-          <a className="session-form-button" href="/api/auth/google">Log in with Google</a>
+          <a className="loginForm__button"
+            href="/api/auth/google"
+          >
+            Log in with Google
+          </a>
         </div>
       </form>
     );
@@ -79,5 +83,5 @@ const mapDispatchToProps = dispatch => ({
 
 export default connect(
   null,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(LoginForm);

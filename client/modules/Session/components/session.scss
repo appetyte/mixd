@@ -1,4 +1,5 @@
-.session-form {
+.loginForm,
+.signupForm {
   margin: 40px auto;
   padding: 20px;
   display: flex;
@@ -10,7 +11,7 @@
   box-shadow: 0 2px 6px 0 hsla(0, 0%, 0%, 0.2);
   border-radius: 5px;
 
-  h1 {
+  &__title {
     margin: 30px;
     margin-bottom: 0;
     font-size: 22px;
@@ -46,7 +47,7 @@
     }
   }
 
-  button, &-button {
+  button, &__button {
     margin-right: 10px;
     padding: 10px 12px;
     font-family: inherit;
@@ -62,19 +63,19 @@
     box-shadow: inset 0 0 10px rgba(#747474, 0.5);
   }
 
-  &-button {
+  &__button {
     // #4885ed
     box-shadow: inset 0 0 10px rgba(#b40a6d, 0.5);
     background: linear-gradient(rgba(#b40a6d, 0.7), #b40a6d);
   }
 
-  &-bottom {
+  &__session-buttons {
     padding: 30px;
     width: 100%;
     min-height: 80px;
   }
 
-  &-header {
+  &__header {
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;

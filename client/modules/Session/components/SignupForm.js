@@ -36,11 +36,11 @@ class SignupForm extends React.Component {
   render() {
     return (
       <form
-        className="session-form"
+        className="signupForm"
         onSubmit={this.handleSubmit}
       >
-        <div className="session-form-header">
-          <h1>Sign up</h1>
+        <div className="signupForm__header">
+          <h1 className="signupForm__title">Sign up</h1>
         <Link to="/login">Log in instead?</Link>
         </div>
         <label htmlFor="email">
@@ -80,11 +80,16 @@ class SignupForm extends React.Component {
             onChange={this.handleChange('confirmPassword')}
           />
         </label>
-        <div className="session-form-bottom">
+        <div className="signupForm__session-buttons">
           <button>
             Sign up
           </button>
-          <a className="session-form-button" href="/api/auth/google">Sign up with Google</a>
+          <a
+            className="signupForm__button"
+            href="/api/auth/google"
+          >
+            Sign up with Google
+          </a>
         </div>
       </form>
     );
@@ -97,5 +102,5 @@ const mapDispatchToProps = dispatch => ({
 
 export default connect(
   null,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(SignupForm);
