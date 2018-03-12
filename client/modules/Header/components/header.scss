@@ -1,7 +1,21 @@
-header {
-  margin: 40px 60px;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #90115b;
+.header {
+  padding: 7px 56px 17px 56px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), transparent);
+  background-color: transparent;
+  color: #fff;
+  opacity: 0.5;
+  user-select: none;
+
+  &:hover {
+    // cool animation :O
+    // Asana inspo? hows their login look? and logo?
+  }
 }

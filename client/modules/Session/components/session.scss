@@ -49,10 +49,10 @@
 
   button, &__button {
     margin-right: 10px;
-    padding: 10px 12px;
+    padding: 10px 14px;
     font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.01em;
     background: linear-gradient(rgba(#747474, 0.7), #747474);
     text-decoration: none;
     color: white;
@@ -85,7 +85,8 @@
     a {
       margin-right: 30px;
       text-decoration: none;
-      font-size: 13px;
+      font-size: 14px;
+      line-height: 22px;
       color: #321030;
 
       &:hover {
